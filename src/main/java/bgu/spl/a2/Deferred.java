@@ -18,7 +18,7 @@ public class Deferred<T> {
 
 
     private T myObject;
-    private boolean Resolved=false;
+    boolean Resolved=false;
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been
