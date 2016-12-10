@@ -25,6 +25,10 @@ public class Deferred<T> {
      */
     public T get() {
         //TODO: replace method body with real implementation
+        //SHALOM MOTHERFUCKER
+        //SHALOM MOTHERFUCKER
+        //SHALOM MOTHERFUCKER
+        //SHALOM MOTHERFUCKER
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
