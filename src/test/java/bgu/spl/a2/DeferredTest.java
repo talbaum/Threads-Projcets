@@ -1,37 +1,41 @@
 package bgu.spl.a2;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  * Created by amitu on 10/12/2016.
  */
 public class DeferredTest {
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
 
     }
 
-    @org.junit.After
+    @After
     public void tearDown() throws Exception {
 
     }
 
-    @org.junit.Test
+    @Test
     public void get() throws Exception {
 
     }
 
-    @org.junit.Test
+    @Test
     public void isResolved() throws Exception {
 
     }
 
-    @org.junit.Test
+    @Test
     public void resolve() throws Exception {
 
     }
 
-    @org.junit.Test
+    @Test
     public void whenResolved() throws Exception {
 
     }
