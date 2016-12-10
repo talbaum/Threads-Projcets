@@ -16,6 +16,9 @@ package bgu.spl.a2;
  */
 public class Deferred<T> {
 
+
+    private T myObject;
+    private boolean Resolved=false;
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been
@@ -24,8 +27,10 @@ public class Deferred<T> {
      * this object is not yet resolved
      */
     public T get() {
-
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+    if (myObject!=null)
+        return myObject;
+    else
+        throw new UnsupportedOperationException("there is no object!");
     }
 
     /**
@@ -34,8 +39,8 @@ public class Deferred<T> {
      * {@link #resolve(java.lang.Object)} has been called on this object before.
      */
     public boolean isResolved() {
+        return Resolved;
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -52,7 +57,10 @@ public class Deferred<T> {
      */
     public void resolve(T value) {
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //body!!!
+
+        Resolved=true;
+       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
