@@ -29,6 +29,7 @@ public class Deferred<T> {
         //SHALOM MOTHERFUCKER
         //SHALOM MOTHERFUCKER
         //SHALOM MOTHERFUCKER
+        //shalom dude you see this shit??
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
