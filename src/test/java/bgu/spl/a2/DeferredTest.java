@@ -45,7 +45,7 @@ public class DeferredTest {
     assertTrue("resolved should be true",getResolvedBoolean());
     }
 
-    boolean getResolvedBoolean(){
+  public  boolean getResolvedBoolean(){
         return tester.Resolved;
     }
 

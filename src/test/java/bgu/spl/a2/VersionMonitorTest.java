@@ -29,7 +29,7 @@ public class VersionMonitorTest {
      */
     @After
     public void tearDown() throws Exception {
-
+    tester=null;
     }
     /**
      * returns the  current version.
@@ -42,7 +42,7 @@ public class VersionMonitorTest {
             assertTrue("version should be 0", tester.getVersion() == 0);
         }
         catch(Exception e){
-            System.out.println("getVersion returned null");
+            assertNull("getVersion returned null", tester.getVersion());
         }
     }
 
@@ -55,17 +55,34 @@ public class VersionMonitorTest {
     @Test
     public void inc() throws Exception {
         try {
+            assertFalse("version shouldnt be 1", tester.getVersion()==1);
+            assertTrue("version should be 0", tester.getVersion()==0);
             tester.inc();
             assertTrue("version should be 1", tester.getVersion() == 1);
-            tester.inc();
-            assertTrue("version should be 2", tester.getVersion() == 2);
+            assertFalse("version shouldnt be 0", tester.getVersion()==0);
         }
-        catch(Exception e)
-        System.out.println("Unexcpeted inc error");
+        catch(Exception e) {
+            System.out.println("Unexpected inc error");
         }
+    }
 
+    /**
+     * wait until this version number changes.
+     @throws Exception
+     @pre: none.
+     @post: version()= (@pre version())+1
+     */
     @Test
     public void await() throws Exception {
+        int myVersion=tester.getVersion();
+        try{
+            tester.await(myVersion);
+            tester.inc();
+        }
+        catch(Exception e){
+            System.out.println("Unexpected await error");
+        }
+    assertFalse("should be different versions",  myVersion==tester.getVersion());
 
     }
 
