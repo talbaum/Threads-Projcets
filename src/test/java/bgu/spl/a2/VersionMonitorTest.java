@@ -77,6 +77,7 @@ public class VersionMonitorTest {
     public void await() throws Exception {
         int myVersion=tester.getVersion();
         try{
+
             tester.await(myVersion);
             tester.inc();
         }

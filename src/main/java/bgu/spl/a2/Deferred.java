@@ -57,9 +57,15 @@ public class Deferred<T> {
      */
     public void resolve(T value) {
         //TODO: replace method body with real implementation
-        //body!!!
+        if (isResolved()){
+            throw  new IllegalStateException("this object has already been resolved!");
+        }
+        else{
+            //check if null here!!
+            myObject=value;
+            Resolved=true;
 
-        Resolved=true;
+        }
        // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
