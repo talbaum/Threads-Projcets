@@ -83,7 +83,5 @@ public class VersionMonitorTest {
             System.out.println("Unexpected await error");
         }
     assertFalse("should be different versions",  myVersion==tester.getVersion());
-
     }
-
 }
