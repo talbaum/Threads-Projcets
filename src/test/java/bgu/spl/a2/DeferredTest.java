@@ -1,4 +1,5 @@
 package bgu.spl.a2;
+import static org.hamcrest.Matcher.*;
 
 import javafx.geometry.Point2D;
 import org.junit.After;
@@ -31,8 +32,18 @@ public class DeferredTest {
     tester2=null;
     tester3=null;
     }
-   // @Rule
-   // public ExpectedException exception = ExpectedException.none();
+
+     /*   try{
+        ... all your code
+    } catch (Exception e){
+        // check your nested clauses
+        if(e.getCause() instanceof FooException){
+            // pass
+        } else {
+            Assert.fail("unexpected exception");
+        }
+    }*/
+
     @Test
     public void get() throws Exception {
         // is null = UnsupportedOperationException should pop;
