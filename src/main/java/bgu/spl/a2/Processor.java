@@ -44,4 +44,8 @@ public class Processor implements Runnable {
 
     }
 
+    WorkStealingThreadPool getPool(){
+        return pool;
+    }
+
 }

@@ -18,6 +18,7 @@ import java.util.LinkedList;
  public abstract class Task<R> {
     private LinkedList<Task> childTasks;
     Deferred<R> myTaskDeferred= new Deferred<>();
+    Processor myProcessor;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -41,6 +42,7 @@ import java.util.LinkedList;
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final void handle(Processor handler) {
+        myProcessor=handler;
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
@@ -54,11 +56,8 @@ import java.util.LinkedList;
     protected final void spawn(Task<?>... task) {
 
         for (Task<?> curTask:task){
-        //curTask.
-            // HERE WE SEND THE TASK TO OUR PROCCESOR QUEUE!
+        myProcessor.getPool().submit(curTask);
         }
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -77,7 +76,7 @@ import java.util.LinkedList;
         //
         Iterator<? extends Task<?>> iterator = tasks.iterator();
         while (iterator.hasNext()){
-            spawn(iterator.next());
+            //spawn(iterator.next());
             iterator.remove();
         }
         myTaskDeferred.whenResolved(callback);
