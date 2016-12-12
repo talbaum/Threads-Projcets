@@ -1,5 +1,4 @@
 package bgu.spl.a2;
-import java.uti
 import java.util.LinkedList;
 
 /**
@@ -19,8 +18,8 @@ import java.util.LinkedList;
 public class Deferred<T> {
 
     private T myObject;
-    LinkedList<Runnable> doAfterResolve;
-    //Runnable myCallback=null;
+    private Object Lock;
+    LinkedList<Runnable> doAfterResolve = new LinkedList<>();
     boolean Resolved=false;
     /**
      *
@@ -57,25 +56,26 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this object is already
      * resolved
      */
-    public void resolve(T value) {
+    public synchronized void resolve(T value) {
         //TODO: replace method body with real implementation
-        if (isResolved()){
-            throw  new IllegalStateException("this object has already been resolved!");
-        }
-        else{
-            //check if null here!!
-            myObject=value;
-            Resolved=true;
-            if (!doAfterResolve.isEmpty()){
-
-                while (!doAfterResolve.isEmpty()) {
-                    doAfterResolve.getFirst().run();
-                    doAfterResolve.removeFirst();
+        //synchronized (Lock) {
+            if (isResolved()) {
+                throw new IllegalStateException("this object has already been resolved!");
+            } else {
+                if (value == null) {
+                    throw new IllegalStateException("resolve has got a null value!");
+                } else {
+                    myObject = value;
+                    Resolved = true;
+                    if (!doAfterResolve.isEmpty()) {
+                        while (!doAfterResolve.isEmpty()) {
+                            doAfterResolve.getFirst().run();
+                            doAfterResolve.removeFirst();
+                        }
+                    }
                 }
             }
-
-        }
-       // throw new UnsupportedOperationException("Not Implemented Yet.");
+        //}
     }
 
     /**
@@ -92,17 +92,20 @@ public class Deferred<T> {
      * resolved
      */
     public void whenResolved(Runnable callback) {
-        if (myCallback!=null){
-            throw new IllegalStateException("this object already have a callback!");
-        }
-        else
-        myCallback=callback;
-
-        if (isResolved()){
-            myCallback.run();
-        }
-        //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        //synchronized (Lock) {
+            if (callback == null) {
+                throw new IllegalStateException("the callback sent to deferred is null!");
+            } else {
+                if (isResolved()) {
+                    callback.run();
+                } else {
+                    doAfterResolve.add(callback);
+                }
+            }
+        //}
     }
-//SHALOM IM TAL BAUM
+
+    public static void main(String[] args){
+            
+    }
 }
