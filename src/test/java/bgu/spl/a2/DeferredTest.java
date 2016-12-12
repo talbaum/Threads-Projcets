@@ -18,7 +18,7 @@ public class DeferredTest {
     private Deferred<Integer> tester1;
     private Deferred<String> tester2;
     private Deferred<int[]> tester3;
-    static int a=30;
+    static int testingValue=0;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class DeferredTest {
             tester1.get();
         }
         catch (Exception e){
-            if(e instanceof UnsupportedOperationException){
+            if(e instanceof IllegalStateException){
                 //pass
             } else {
                 fail("unexpected exception: " + e.getMessage());
@@ -99,20 +99,35 @@ public class DeferredTest {
      */
     @Test
     public void resolve() throws Exception {
+
         // check if tester.get() gives a null ecxption
-    assertFalse("should be false",tester1.isResolved());
-    Integer value = 5;
-    tester1.resolve(value);
-    assertTrue("resolved should be true",tester1.isResolved());
-    assertEquals(value,tester1.get());
-        //  thrown.expect(IllegalStateException); to implement
-        //tester1.resolve(value);
+        assertFalse("should be false",tester1.isResolved());
+        Integer value = 5;
+        tester1.resolve(value);
+        assertTrue("resolved should be true",tester1.isResolved());
+        assertEquals(value,tester1.get());
+
+        try{
+            tester1.resolve(4);
+        }
+        catch (Exception e) {
+            if (e instanceof IllegalStateException) {
+                //pass
+            } else {
+                fail("unexpected exception: " + e.getMessage());
+            }
+        }
 
         assertFalse("should be false",tester2.isResolved());
-        String s =null;
-        tester2.resolve(s); //should
 
-        //do the same with array!
+        try{
+            String s =null;
+            tester2.resolve(s); //should send ecxeption???
+            fail("we shouldnt be able to resolve a null value!! fix your coding young man!");
+        }
+        catch (Exception e) {
+            //pass
+        }
 
     }
 
@@ -124,10 +139,34 @@ public class DeferredTest {
      */
     @Test
     public void whenResolved() throws Exception {
-        int a;
-    Runnable testing = () -> { DeferredTest.a=40;};
+        Runnable run1 = null;
+        try {
+        tester1.whenResolved(run1);
+        }
+        catch (Exception e){
+            fail("null sent to whenResolved: " + e.getMessage());
+        }
+
+        testingValue=30;
+        Runnable testing = () -> DeferredTest.testingValue = 40;
+        tester1.whenResolved(testing);
+        tester1.resolve(5);
+        assertEquals("after resolve the callback is not running",40,testingValue);
+
+        Runnable testing2 = () -> DeferredTest.testingValue = 10;
+        tester2.resolve("test string to send as value");
+        tester2.whenResolved(testing2);
+        assertEquals("after resolve the callbacks is not running",10,testingValue);
+
+
+        // see if the order of callback matter!!!
+        Runnable testing3 = () -> DeferredTest.testingValue = 20;
+        Runnable testing4 = () -> DeferredTest.testingValue = 25;
+        tester3.whenResolved(testing3);
+        tester3.whenResolved(testing4);
+        int[] b = {1,3,4};
+        tester3.resolve(b);
+        assertEquals("after resolve the callbacks is not running",25,testingValue);
     }
 
     }
-
-}

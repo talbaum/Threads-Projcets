@@ -18,6 +18,7 @@ public class Deferred<T> {
 
 
     private T myObject;
+    Runnable myCallback=null;
     boolean Resolved=false;
     /**
      *
@@ -30,7 +31,7 @@ public class Deferred<T> {
     if (myObject!=null)
         return myObject;
     else
-        throw new UnsupportedOperationException("there is no object!");
+        throw new IllegalStateException("the object has not resolved yet!");
     }
 
     /**
@@ -64,6 +65,9 @@ public class Deferred<T> {
             //check if null here!!
             myObject=value;
             Resolved=true;
+            if (myCallback!=null){
+                myCallback.run();
+            }
 
         }
        // throw new UnsupportedOperationException("Not Implemented Yet.");
@@ -83,8 +87,17 @@ public class Deferred<T> {
      * resolved
      */
     public void whenResolved(Runnable callback) {
+        if (myCallback!=null){
+            throw new IllegalStateException("this object already have a callback!");
+        }
+        else
+        myCallback=callback;
+
+        if (isResolved()){
+            myCallback.run();
+        }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }
