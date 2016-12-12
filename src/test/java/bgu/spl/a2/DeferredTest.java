@@ -158,7 +158,6 @@ public class DeferredTest {
         tester2.whenResolved(testing2);
         assertEquals("after resolve the callbacks is not running",10,testingValue);
 
-
         // see if the order of callback matter!!!
         Runnable testing3 = () -> DeferredTest.testingValue = 20;
         Runnable testing4 = () -> DeferredTest.testingValue = 25;
