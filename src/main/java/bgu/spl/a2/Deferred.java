@@ -15,13 +15,10 @@ package bgu.spl.a2;
  * @param <T> the result type
  */
 public class Deferred<T> {
-
-
     private T myObject;
     Runnable myCallback=null;
     boolean Resolved=false;
     /**
-     *
      * @return the resolved value if such exists (i.e., if this object has been
      * {@link #resolve(java.lang.Object)}ed yet
      * @throws IllegalStateException in the case where this method is called and
@@ -35,13 +32,11 @@ public class Deferred<T> {
     }
 
     /**
-     *
      * @return true if this object has been resolved - i.e., if the method
      * {@link #resolve(java.lang.Object)} has been called on this object before.
      */
     public boolean isResolved() {
         return Resolved;
-        //TODO: replace method body with real implementation
     }
 
     /**
@@ -99,5 +94,5 @@ public class Deferred<T> {
         //TODO: replace method body with real implementation
         //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
-
+//SHALOM IM TAL BAUM
 }

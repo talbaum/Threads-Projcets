@@ -1,6 +1,7 @@
 package bgu.spl.a2;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * an abstract class that represents a task that may be executed using the
@@ -14,7 +15,7 @@ import java.util.Collection;
  * @param <R> the task result type
  */
 public abstract class Task<R> {
-
+    private LinkedList<Task> childTasks;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
