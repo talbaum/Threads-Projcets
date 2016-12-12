@@ -142,9 +142,10 @@ public class DeferredTest {
         Runnable run1 = null;
         try {
         tester1.whenResolved(run1);
+        fail("null sent to whenResolved and passed!");
         }
         catch (Exception e){
-            fail("null sent to whenResolved: " + e.getMessage());
+            //pass
         }
 
         testingValue=30;

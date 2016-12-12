@@ -1,6 +1,7 @@
 package bgu.spl.a2;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -14,8 +15,9 @@ import java.util.LinkedList;
  *
  * @param <R> the task result type
  */
-public abstract class Task<R> {
+ public abstract class Task<R> {
     private LinkedList<Task> childTasks;
+    Deferred<R> myTaskDeferred= new Deferred<>();
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -39,7 +41,6 @@ public abstract class Task<R> {
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final void handle(Processor handler) {
-
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
@@ -51,6 +52,11 @@ public abstract class Task<R> {
      * @param task the task to execute
      */
     protected final void spawn(Task<?>... task) {
+
+        for (Task<?> curTask:task){
+        //curTask.
+            // HERE WE SEND THE TASK TO OUR PROCCESOR QUEUE!
+        }
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
@@ -66,8 +72,15 @@ public abstract class Task<R> {
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //write how to check if all the given tasks are resolved!
+        //
+        //
+        Iterator<? extends Task<?>> iterator = tasks.iterator();
+        while (iterator.hasNext()){
+            spawn(iterator.next());
+            iterator.remove();
+        }
+        myTaskDeferred.whenResolved(callback);
     }
 
     /**
@@ -77,16 +90,15 @@ public abstract class Task<R> {
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        myTaskDeferred.resolve(result);
     }
 
     /**
      * @return this task deferred result
      */
     public final Deferred<R> getResult() {
+        return myTaskDeferred;
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }
