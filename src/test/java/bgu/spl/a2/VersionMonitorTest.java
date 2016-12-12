@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public class VersionMonitorTest {
     private VersionMonitor tester;
-    static int testingVal=30;
+    static int testingVal=0;
     /**
      * Set up for a test.
      @throws Exception
@@ -76,10 +76,20 @@ public class VersionMonitorTest {
     @Test
     public void await() throws Exception {
         Runnable check= ()->{
-            tester.await(1);
-            VersionMonitorTest.testingVal=40;
+            try {
+                tester.await(tester.getVersion());
+                VersionMonitorTest.testingVal=40;
+            }
+            catch (InterruptedException e){
+                System.out.println("Tester got Interupted");
+            }
         };
         Runnable check2= ()->{
+            try{
+                wait(10000);
+            }
+         catch(Exception e){}
+
             tester.inc();
         };
         Thread t1= new Thread(check);
@@ -88,14 +98,5 @@ public class VersionMonitorTest {
         t2.start();
         assertTrue("testingVal should be 40", testingVal==40);
 
-        int myVersion=tester.getVersion();
-        try{
-            tester.await(myVersion);
-            tester.inc();
-        }
-        catch(Exception e){
-            System.out.println("Unexpected await error");
-        }
-    assertFalse("should be different versions",  myVersion==tester.getVersion());
     }
 }
