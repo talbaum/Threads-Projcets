@@ -16,7 +16,7 @@ package bgu.spl.a2;
  * methods
  */
 public class VersionMonitor {
-    private int version;
+    private int version=0;
 
     VersionMonitor(){
         version=0;
@@ -30,15 +30,12 @@ public class VersionMonitor {
 
     public void inc() {
         version++;
-        //TODO: replace method body with real implementation
-
     }
 
     public void await(int version) throws InterruptedException {
         //TODO: replace method body with real implementation
             while (this.version != version) {
-                wait(10000);
-            }
 
+            }
     }
 }

@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 public class VersionMonitorTest {
     private VersionMonitor tester;
     static int testingVal=0;
+    boolean flag=false;
     /**
      * Set up for a test.
      @throws Exception
@@ -77,25 +78,28 @@ public class VersionMonitorTest {
     public void await() throws Exception {
         Runnable check= ()->{
             try {
-                tester.await(tester.getVersion());
+                flag=true;
+                int theVersion=tester.getVersion();
+                tester.await(theVersion);
                 VersionMonitorTest.testingVal=40;
             }
-            catch (InterruptedException e){
-                System.out.println("Tester got Interupted");
+            catch (Exception e){
+                System.out.println("Tester got Interupted" + e.toString());
             }
         };
-        Runnable check2= ()->{
-            try{
-                wait(10000);
-            }
-         catch(Exception e){}
 
+        Runnable check2= ()->{
+            while (!flag){
+            }
             tester.inc();
         };
+
+
         Thread t1= new Thread(check);
         Thread t2=new Thread(check2);
-        t1.start();
-        t2.start();
+
+        t1.run();
+        t2.run();
         assertTrue("testingVal should be 40", testingVal==40);
 
     }
