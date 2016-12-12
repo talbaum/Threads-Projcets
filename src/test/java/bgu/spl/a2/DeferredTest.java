@@ -17,13 +17,15 @@ public class DeferredTest {
     //need to build constractor or function that does this and setUp is sent to it?
     private Deferred<Integer> tester1;
     private Deferred<String> tester2;
-    private Deferred<Point2D> tester3;
+    private Deferred<int[]> tester3;
+    static int a=30;
 
     @Before
     public void setUp() throws Exception {
     tester1 = new Deferred<Integer>();
     tester2 = new Deferred<String>();
-    tester3 = new Deferred<Point2D>();
+    tester3 = new Deferred<int[]>();
+
     }
 
     @After
@@ -34,7 +36,7 @@ public class DeferredTest {
     }
 
      /*   try{
-        ... all your code
+        //... all your code
     } catch (Exception e){
         // check your nested clauses
         if(e.getCause() instanceof FooException){
@@ -46,14 +48,26 @@ public class DeferredTest {
 
     @Test
     public void get() throws Exception {
-        // is null = UnsupportedOperationException should pop;
-        assertFalse("resolved should be false",tester1.isResolved());
-        Integer value = 3;
-        tester1.resolve(value);
-        assertEquals(value,tester1.get());
-        assertTrue("resolved should be true",tester1.isResolved());
+        try{
+            tester1.get();
+        }
+        catch (Exception e){
+            if(e instanceof UnsupportedOperationException){
+                //pass
+            } else {
+                fail("unexpected exception: " + e.getMessage());
+            }
 
-        //checks the same for next testers too.
+            assertFalse("resolved should be false",tester1.isResolved());
+            Integer value = 3;
+            tester1.resolve(value);
+            assertEquals(value,tester1.get());
+            assertTrue("resolved should be true",tester1.isResolved());
+        }
+
+        int[] a = {1,2,3,4,5};
+        tester3.resolve(a);
+        assertEquals(a[2],tester3.get()[2]);
     }
 
 
@@ -102,8 +116,17 @@ public class DeferredTest {
 
     }
 
+    /**
+     * add a runnable to the deffered to run when it has been resolved.
+     @throws Exception
+     @pre: tester1.isResolved()=false
+     @post: tester1.isResolved()=true //not sure here!
+     */
     @Test
     public void whenResolved() throws Exception {
+        int a;
+    Runnable testing = () -> { DeferredTest.a=40;};
+    }
 
     }
 
