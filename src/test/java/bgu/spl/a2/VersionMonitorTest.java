@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
  */
 public class VersionMonitorTest {
     private VersionMonitor tester;
+    static int testingVal=30;
     /**
      * Set up for a test.
      @throws Exception
@@ -46,7 +47,6 @@ public class VersionMonitorTest {
             assertNull("getVersion returned null", tester.getVersion());
         }
     }
-
     /**
      * increase the version value by 1.
      * @throws Exception
@@ -75,9 +75,21 @@ public class VersionMonitorTest {
      */
     @Test
     public void await() throws Exception {
+        Runnable check= ()->{
+            tester.await(1);
+            VersionMonitorTest.testingVal=40;
+        };
+        Runnable check2= ()->{
+            tester.inc();
+        };
+        Thread t1= new Thread(check);
+        Thread t2=new Thread(check2);
+        t1.start();
+        t2.start();
+        assertTrue("testingVal should be 40", testingVal==40);
+
         int myVersion=tester.getVersion();
         try{
-
             tester.await(myVersion);
             tester.inc();
         }
