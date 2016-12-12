@@ -1,4 +1,6 @@
 package bgu.spl.a2;
+import java.uti
+import java.util.LinkedList;
 
 /**
  * this class represents a deferred result i.e., an object that eventually will
@@ -16,9 +18,9 @@ package bgu.spl.a2;
  */
 public class Deferred<T> {
 
-
     private T myObject;
-    Runnable myCallback=null;
+    LinkedList<Runnable> doAfterResolve;
+    //Runnable myCallback=null;
     boolean Resolved=false;
     /**
      *
@@ -27,7 +29,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this method is called and
      * this object is not yet resolved
      */
-    public T get() {
+    public T get() throws IllegalStateException{
     if (myObject!=null)
         return myObject;
     else
@@ -41,8 +43,6 @@ public class Deferred<T> {
      */
     public boolean isResolved() {
         return Resolved;
-        //im hereeeeeeeee
-        //TODO: replace method body with real implementation
     }
 
     /**
@@ -66,8 +66,12 @@ public class Deferred<T> {
             //check if null here!!
             myObject=value;
             Resolved=true;
-            if (myCallback!=null){
-                myCallback.run();
+            if (!doAfterResolve.isEmpty()){
+
+                while (!doAfterResolve.isEmpty()) {
+                    doAfterResolve.getFirst().run();
+                    doAfterResolve.removeFirst();
+                }
             }
 
         }
