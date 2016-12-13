@@ -2,7 +2,7 @@ package bgu.spl.a2;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * an abstract class that represents a task that may be executed using the
@@ -16,7 +16,7 @@ import java.util.LinkedList;
  * @param <R> the task result type
  */
  public abstract class Task<R> {
-    private LinkedList<Task> childTasks;
+    private ConcurrentLinkedQueue<Task<?>> childTasks;
     Deferred<R> myTaskDeferred= new Deferred<>();
     Processor myProcessor;
     /**
@@ -43,8 +43,15 @@ import java.util.LinkedList;
      */
     /*package*/ final void handle(Processor handler) {
         myProcessor=handler;
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        while (!childTasks.isEmpty()) {
+            Task<?> tmp = childTasks.poll();
+            if (!tmp.getResult().isResolved()) {
+                spawn(tmp);
+                childTasks.add(tmp);
+            }
+        }
+        //exit here only when there is no more childtasks
+        this.start();
     }
 
     /**
@@ -74,10 +81,12 @@ import java.util.LinkedList;
         //write how to check if all the given tasks are resolved!
         //
         //
-        Iterator<? extends Task<?>> iterator = tasks.iterator();
-        while (iterator.hasNext()){
-            //spawn(iterator.next());
-            iterator.remove();
+        Iterator<? extends Task<?>> E = tasks.iterator();
+        while (E.hasNext()){
+            if (E.next().getResult().isResolved()) {
+                childTasks.add(E.next());
+            }
+            E.remove();
         }
         myTaskDeferred.whenResolved(callback);
     }
@@ -99,5 +108,4 @@ import java.util.LinkedList;
         return myTaskDeferred;
         //TODO: replace method body with real implementation
     }
-
 }

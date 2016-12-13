@@ -20,7 +20,7 @@ public class Deferred<T> {
     private T myObject;
     private Object Lock;
     LinkedList<Runnable> doAfterResolve = new LinkedList<>();
-    boolean Resolved = false;
+    boolean resolved = false;
 
     /**
      * @return the resolved value if such exists (i.e., if this object has been
@@ -28,7 +28,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this method is called and
      *                               this object is not yet resolved
      */
-    public T get() throws IllegalStateException {
+    public synchronized T get() throws IllegalStateException {
         if (myObject != null)
             return myObject;
         else
@@ -39,8 +39,8 @@ public class Deferred<T> {
      * @return true if this object has been resolved - i.e., if the method
      * {@link #resolve(java.lang.Object)} has been called on this object before.
      */
-    public boolean isResolved() {
-        return Resolved;
+    public synchronized boolean isResolved() {
+        return resolved;
     }
 
     /**
@@ -65,7 +65,7 @@ public class Deferred<T> {
                 throw new IllegalStateException("this object has already been resolved!");
             } else {
                 myObject = value;
-                Resolved = true;
+                resolved = true;
                 if (!doAfterResolve.isEmpty()) {
                     while (!doAfterResolve.isEmpty()) {
                         doAfterResolve.getFirst().run();
@@ -74,7 +74,6 @@ public class Deferred<T> {
                 }
             }
         }
-        //}
     }
 
     /**
@@ -91,7 +90,6 @@ public class Deferred<T> {
      *                 resolved
      */
     public void whenResolved(Runnable callback) {
-        //synchronized (Lock) {
         if (callback == null) {
             throw new IllegalStateException("the callback sent to deferred is null!");
         } else {
@@ -101,7 +99,6 @@ public class Deferred<T> {
                 doAfterResolve.add(callback);
             }
         }
-        //}
     }
 }
    /* public static void main(String[] args){
