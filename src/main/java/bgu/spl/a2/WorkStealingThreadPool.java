@@ -30,7 +30,7 @@ public class WorkStealingThreadPool {
     public WorkStealingThreadPool(int nthreads) {
         numOfThreads=nthreads;
 
-        myProcessors=new Processor[nthreads];
+        myProcessors=new Processor[numOfThreads];
     for (int i=0;i<myProcessors.length;i++){
         myProcessors[i]=new Processor(i,this);
 }
@@ -43,7 +43,6 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
-        //TODO: replace method body with real implementation
         int randProcess = (int)Math.random()*(numOfThreads-1);
         myProcessors[randProcess].addTask(task);
     }

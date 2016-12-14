@@ -17,8 +17,7 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-    Deque myTasks;
-    int numOfTasks=0;
+    Deque <Task> myTasks;
     /**
      * constructor for this class
      *
@@ -47,11 +46,8 @@ public class Processor implements Runnable {
         if (myTasks.isEmpty()) {
             steal();
         } else {
-            Task doMe;
             while (!myTasks.isEmpty()) {
-                doMe = (Task) myTasks.pollFirst();
-                numOfTasks--;
-                doMe.start();
+                myTasks.pollFirst().handle(this);
             }
         }
     }
@@ -59,19 +55,18 @@ public class Processor implements Runnable {
     void steal(){
         Processor nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
 
-        while(nextProcessor.isEmpty() || nextProcessor.numOfTasks==1) {
-            nextProcessor = pool.myProcessors[(id + 1) % pool.myProcessors.length];
+        while(nextProcessor.isEmpty() || nextProcessor.myTasks.size()==1) {
+            nextProcessor = pool.myProcessors[(nextProcessor.id + 1) % pool.myProcessors.length];
+
            // if(nextProcessor.id==this.id)
               //should sleep and be notified when new task are inserted
         }
 
-        int numOfTasksToSteal=nextProcessor.numOfTasks/2;
+        int numOfTasksToSteal=nextProcessor.myTasks.size()/2;
         int stealCount=0;
-        Task nextTask;
         while(stealCount<numOfTasksToSteal){
             try {
-                nextTask = nextProcessor.removeTask();
-                addTask(nextTask);
+                addTask(nextProcessor.removeTask());
                 stealCount++;
             }
             catch (Exception e){
@@ -82,17 +77,15 @@ public class Processor implements Runnable {
 
     void addTask(Task task){
         myTasks.add(task);
-        numOfTasks++;
+
     }
 
     Task removeTask() throws Exception{
 
-        Task last= (Task) myTasks.pollLast();
-        if(last!=null) {
-            numOfTasks--;
+        Task last= myTasks.pollLast();
+        if(last!=null)
             return last;
-        }
-            else
+        else
             throw new Exception("no tasks to remove. exception at remove task!");
     }
 
@@ -101,7 +94,7 @@ public class Processor implements Runnable {
     }
 
     boolean isEmpty(){
-        return numOfTasks==0;
+        return myTasks.size()==0;
     }
 }
 
