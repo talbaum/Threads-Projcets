@@ -1,6 +1,6 @@
 package bgu.spl.a2;
 
-import java.util.Deque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * this class represents a single work stealing processor, it is
@@ -17,7 +17,7 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-    Deque <Task> myTasks;
+    LinkedBlockingDeque <Task<?>> myTasks;
     /**
      * constructor for this class
      *
