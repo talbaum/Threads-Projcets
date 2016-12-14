@@ -1,4 +1,4 @@
-package bgu.spl.a2;
+ package bgu.spl.a2;
 import java.util.LinkedList;
 
 /**

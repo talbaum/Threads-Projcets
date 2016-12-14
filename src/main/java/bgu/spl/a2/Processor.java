@@ -1,5 +1,7 @@
 package bgu.spl.a2;
 
+import java.util.Deque;
+
 /**
  * this class represents a single work stealing processor, it is
  * {@link Runnable} so it is suitable to be executed by threads.
@@ -15,7 +17,8 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-
+    Deque myTasks;
+    int numOfTasks=0;
     /**
      * constructor for this class
      *
@@ -39,13 +42,47 @@ public class Processor implements Runnable {
 
     @Override
     public void run() {
+        // pool.start(); - Old implement
 
-    pool.start();
+        if (myTasks.isEmpty()) {
+            steal();
+        } else {
+            Task doMe;
+            while (!myTasks.isEmpty()) {
+                doMe = (Task) myTasks.getFirst();
+                doMe.start();
+            }
+        }
+    }
 
+    void steal(){
+        Processor nextProcessor=pool.myProccesors[(id+1)%pool.myProccesors.length];
+
+        while(nextProcessor.isEmpty() || nextProcessor.numOfTasks==1)
+            nextProcessor=pool.myProccesors[(id+1)%pool.myProccesors.length];
+
+        int numOfTasksToSteal=nextProcessor.numOfTasks/2;
+        int count=0;
+        while(count<numOfTasksToSteal){
+            addTask((nextProcessor.removeTask());
+            count++;
+        }
+    }
+    void addTask(Task task){
+        myTasks.add(task);
+        numOfTasks++;
+    }
+    Task removeTask(){
+         numOfTasks--;
+        return (Task) myTasks.getLast();
     }
 
     WorkStealingThreadPool getPool(){
         return pool;
     }
 
+    boolean isEmpty(){
+        return numOfTasks==0;
+    }
 }
+

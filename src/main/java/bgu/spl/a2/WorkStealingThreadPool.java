@@ -1,5 +1,7 @@
 package bgu.spl.a2;
 
+import java.util.LinkedList;
+
 /**
  * represents a work stealing thread pool - to understand what this class does
  * please refer to your assignment.
@@ -11,7 +13,8 @@ package bgu.spl.a2;
  * methods
  */
 public class WorkStealingThreadPool {
-
+    private int numOfThreads;
+    Processor [] myProccesors;
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
      * {@link Processor}s. Note, threads should not get started until calling to
@@ -25,8 +28,13 @@ public class WorkStealingThreadPool {
      * thread pool
      */
     public WorkStealingThreadPool(int nthreads) {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        numOfThreads=nthreads;
+
+        myProccesors=new Processor[nthreads];
+    for (int i=0;i<myProccesors.length;i++){
+    myProccesors[i]=new Processor(i,this);
+}
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -36,7 +44,8 @@ public class WorkStealingThreadPool {
      */
     public void submit(Task<?> task) {
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        int randProcess = (int)Math.random()*(numOfThreads-1);
+        myProccesors[randProcess].addToDeque(task);
     }
 
     /**
@@ -61,6 +70,7 @@ public class WorkStealingThreadPool {
      */
     public void start() {
         //TODO: replace method body with real implementation
+
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
