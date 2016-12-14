@@ -41,8 +41,6 @@ public class Processor implements Runnable {
 
     @Override
     public void run() {
-        // pool.start(); - Old implement
-
         if (myTasks.isEmpty()) {
             steal();
         } else {
@@ -77,7 +75,7 @@ public class Processor implements Runnable {
 
     void addTask(Task task){
         myTasks.add(task);
-
+        pool.monitor.inc(); //check
     }
 
     Task removeTask() throws Exception{

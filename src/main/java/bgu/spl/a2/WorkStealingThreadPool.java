@@ -15,6 +15,7 @@ import java.util.LinkedList;
 public class WorkStealingThreadPool {
     private int numOfThreads;
     Processor [] myProcessors;
+    VersionMonitor monitor= new VersionMonitor();
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
      * {@link Processor}s. Note, threads should not get started until calling to
@@ -33,7 +34,8 @@ public class WorkStealingThreadPool {
         myProcessors=new Processor[numOfThreads];
     for (int i=0;i<myProcessors.length;i++){
         myProcessors[i]=new Processor(i,this);
-}
+    //Threards array?
+    }
         //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
@@ -45,6 +47,7 @@ public class WorkStealingThreadPool {
     public void submit(Task<?> task) {
         int randProcess = (int)Math.random()*(numOfThreads-1);
         myProcessors[randProcess].addTask(task);
+        monitor.inc();//check
     }
 
     /**
