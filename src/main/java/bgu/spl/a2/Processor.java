@@ -59,8 +59,11 @@ public class Processor implements Runnable {
     void steal(){
         Processor nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
 
-        while(nextProcessor.isEmpty() || nextProcessor.numOfTasks==1)
-            nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
+        while(nextProcessor.isEmpty() || nextProcessor.numOfTasks==1) {
+            nextProcessor = pool.myProcessors[(id + 1) % pool.myProcessors.length];
+           // if(nextProcessor.id==this.id)
+              //should sleep and be notified when new task are inserted
+        }
 
         int numOfTasksToSteal=nextProcessor.numOfTasks/2;
         int stealCount=0;
@@ -72,7 +75,7 @@ public class Processor implements Runnable {
                 stealCount++;
             }
             catch (Exception e){
-                break;
+                break; //no more tasks to remove
             }
         }
     }
