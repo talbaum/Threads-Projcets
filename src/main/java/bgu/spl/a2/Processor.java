@@ -49,32 +49,48 @@ public class Processor implements Runnable {
         } else {
             Task doMe;
             while (!myTasks.isEmpty()) {
-                doMe = (Task) myTasks.getFirst();
+                doMe = (Task) myTasks.pollFirst();
+                numOfTasks--;
                 doMe.start();
             }
         }
     }
 
     void steal(){
-        Processor nextProcessor=pool.myProccesors[(id+1)%pool.myProccesors.length];
+        Processor nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
 
         while(nextProcessor.isEmpty() || nextProcessor.numOfTasks==1)
-            nextProcessor=pool.myProccesors[(id+1)%pool.myProccesors.length];
+            nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
 
         int numOfTasksToSteal=nextProcessor.numOfTasks/2;
-        int count=0;
-        while(count<numOfTasksToSteal){
-            addTask((nextProcessor.removeTask());
-            count++;
+        int stealCount=0;
+        Task nextTask;
+        while(stealCount<numOfTasksToSteal){
+            try {
+                nextTask = nextProcessor.removeTask();
+                addTask(nextTask);
+                stealCount++;
+            }
+            catch (Exception e){
+                break;
+            }
         }
     }
+
     void addTask(Task task){
         myTasks.add(task);
         numOfTasks++;
     }
-    Task removeTask(){
-         numOfTasks--;
-        return (Task) myTasks.getLast();
+
+    Task removeTask() throws Exception{
+
+        Task last= (Task) myTasks.pollLast();
+        if(last!=null) {
+            numOfTasks--;
+            return last;
+        }
+            else
+            throw new Exception("no tasks to remove. exception at remove task!");
     }
 
     WorkStealingThreadPool getPool(){
