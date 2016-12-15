@@ -22,19 +22,18 @@ public class VersionMonitor {
         version=0;
     }
 
-    public int getVersion() {
+    public synchronized int getVersion() {
         return version;
-        //TODO: replace method body with real implementation
-       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
-    public void inc() {
+    public synchronized void inc() {
         version++;
+        notifyAll();
     }
 
     public void await(int version) throws InterruptedException {
         //TODO: replace method body with real implementation
-            while (this.version != version) {
+            while (this.version == version) {
                 wait();
             }
     }

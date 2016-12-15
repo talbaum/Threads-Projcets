@@ -17,7 +17,7 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-    LinkedBlockingDeque <Task<?>> myTasks;
+    //LinkedBlockingDeque <Task<?>> myTasks;
     /**
      * constructor for this class
      *
@@ -41,50 +41,63 @@ public class Processor implements Runnable {
 
     @Override
     public void run() {
-        if (myTasks.isEmpty()) {
+        //need a while on all with boolean, so it will run until shutdown maybe??
+        if (pool.myQues[id].isEmpty()) {
             steal();
-        } else {
-            while (!myTasks.isEmpty()) {
-                myTasks.pollFirst().handle(this);
+        }
+        else {
+            while (!pool.myQues[id].isEmpty()) {
+                pool.myQues[id].pollFirst().handle(this);
             }
         }
     }
 
     void steal(){
-        Processor nextProcessor=pool.myProcessors[(id+1)%pool.myProcessors.length];
+        int whereToSteal=id+1;
+        int startVersion=pool.monitor.getVersion();
 
-        while(nextProcessor.isEmpty() || nextProcessor.myTasks.size()==1) {
-            nextProcessor = pool.myProcessors[(nextProcessor.id + 1) % pool.myProcessors.length];
+        while(pool.myQues[whereToSteal].size()<=1) {
+            whereToSteal=whereToSteal+1%pool.myProcessors.length;
 
-           // if(nextProcessor.id==this.id)
-              //should sleep and be notified when new task are inserted
-        }
-
-        int numOfTasksToSteal=nextProcessor.myTasks.size()/2;
-        int stealCount=0;
-        while(stealCount<numOfTasksToSteal){
-            try {
-                addTask(nextProcessor.removeTask());
-                stealCount++;
+            if(whereToSteal==id){ //why we need the try and catch?? need to test the await function again.
+                try {
+                    pool.monitor.await(startVersion); // sleeps until new tasks are coming
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            catch (Exception e){
-                break; //no more tasks to remove
+        }
+        //if there there is tasks to steal get here.
+
+        if (whereToSteal!=id){ //if the tasks are not my own get in
+            int numOfTasksToSteal=pool.myQues[whereToSteal].size()/2;
+            int stealCount=0;
+            while(stealCount<numOfTasksToSteal){
+                try {
+                    addTask(pool.myProcessors[whereToSteal].removeTask());
+                    stealCount++;
+                }
+                catch (Exception e){
+                    break; //no more tasks to remove
+                }
             }
         }
     }
 
-    void addTask(Task task){
-        myTasks.add(task);
-        pool.monitor.inc(); //check
+    void addTask(Task<?> task){
+        if (task!=null) {
+            pool.myQues[id].add(task);
+            pool.monitor.inc(); //check  amit: i think its ok, it fits what we need
+        }
     }
 
-    Task removeTask() throws Exception{
-
-        Task last= myTasks.pollLast();
+    Task<?> removeTask() throws Exception{ //maybe return a null to avoid ecxeption??
+        return pool.myQues[id].pollFirst();
+        /*Task last= pool.myQues[id].pollFirst();
         if(last!=null)
             return last;
         else
-            throw new Exception("no tasks to remove. exception at remove task!");
+            throw new Exception("no tasks to remove. exception at remove task!");*/
     }
 
     WorkStealingThreadPool getPool(){
@@ -92,7 +105,7 @@ public class Processor implements Runnable {
     }
 
     boolean isEmpty(){
-        return myTasks.size()==0;
+        return pool.myQues[id].size()==0;
     }
 }
 

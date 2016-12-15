@@ -18,7 +18,7 @@ import java.util.LinkedList;
 public class Deferred<T> {
 
     private T myObject;
-    private Object Lock;
+    //private Object Lock;
     LinkedList<Runnable> doAfterResolve = new LinkedList<>();
     boolean resolved = false;
 
@@ -60,18 +60,18 @@ public class Deferred<T> {
         //synchronized (Lock) {
         if (value == null) {
             throw new IllegalStateException("resolve has got a null value!");
-        } else {
+        }
+        else {
             if (isResolved()) {
                 throw new IllegalStateException("this object has already been resolved!");
             } else {
                 myObject = value;
                 resolved = true;
-                if (!doAfterResolve.isEmpty()) {
                     while (!doAfterResolve.isEmpty()) {
                         doAfterResolve.getFirst().run();
                         doAfterResolve.removeFirst();
                     }
-                }
+
             }
         }
     }
@@ -92,7 +92,8 @@ public class Deferred<T> {
     public void whenResolved(Runnable callback) {
         if (callback == null) {
             throw new IllegalStateException("the callback sent to deferred is null!");
-        } else {
+        }
+        else {
             if (isResolved()) {
                 callback.run();
             } else {
@@ -101,4 +102,3 @@ public class Deferred<T> {
         }
     }
 }
-

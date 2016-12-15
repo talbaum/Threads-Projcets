@@ -1,6 +1,5 @@
 package bgu.spl.a2;
-
-import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * represents a work stealing thread pool - to understand what this class does
@@ -13,8 +12,8 @@ import java.util.LinkedList;
  * methods
  */
 public class WorkStealingThreadPool {
-    private int numOfThreads;
     Processor [] myProcessors;
+    LinkedBlockingDeque<Task<?>>[] myQues;
     VersionMonitor monitor= new VersionMonitor();
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
@@ -29,14 +28,11 @@ public class WorkStealingThreadPool {
      * thread pool
      */
     public WorkStealingThreadPool(int nthreads) {
-        numOfThreads=nthreads;
-
-        myProcessors=new Processor[numOfThreads];
-    for (int i=0;i<myProcessors.length;i++){
-        myProcessors[i]=new Processor(i,this);
-    //Threards array?
-    }
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        myProcessors=new Processor[nthreads];
+        for (int i=0;i<myProcessors.length;i++){
+            myProcessors[i]=new Processor(i,this);
+            myQues[i]=new LinkedBlockingDeque<Task<?>>();
+        }
     }
 
     /**
@@ -45,7 +41,7 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
-        int randProcess = (int)Math.random()*(numOfThreads-1);
+        int randProcess = (int)Math.random()*(myProcessors.length-1);
         myProcessors[randProcess].addTask(task);
         monitor.inc();//check
     }

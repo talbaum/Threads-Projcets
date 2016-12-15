@@ -41,17 +41,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      *
      * @param handler the handler that wants to handle the task
      */
-    /*package*/ final void handle(Processor handler) {
-        myProcessor=handler;
-        while (!childTasks.isEmpty()) {
-            Task<?> tmp = childTasks.poll();
-            if (!tmp.getResult().isResolved()) {
-                spawn(tmp);
-                childTasks.add(tmp);
+    /*package*/ final synchronized void handle(Processor handler) {
+        if (!myTaskDeferred.isResolved()) {
+            myProcessor = handler;
+            while (!childTasks.isEmpty()) {
+                Task<?> tmp = childTasks.poll();
+                if (!tmp.getResult().isResolved()) {
+                    //Runnable callback = () -> myProcessor.addTask(this);
+                    //tmp.getResult().whenResolved(callback);
+                    spawn(tmp);
+                    childTasks.add(tmp);
+                    //myProcessor.run();
+                }
             }
+            //exit here only when there is no more childtasks
+            start();
         }
-        //exit here only when there is no more childtasks
-        start();
     }
 
     /**
@@ -60,7 +65,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      *
      * @param task the task to execute
      */
-    protected final void spawn(Task<?>... task) {
+    protected final void spawn(Task<?>... task) {  //maybe sync
         for (Task<?> curTask:task){
         myProcessor.addTask(curTask);
         }
@@ -78,11 +83,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
         //write how to check if all the given tasks are resolved!
+        //
+        //
         Iterator<? extends Task<?>> E = tasks.iterator();
         while (E.hasNext()){
-
-            if (E.next().getResult().isResolved()) {
-                childTasks.add(E.next());
+            Task<?> tmp =E.next();
+            if (!tmp.getResult().isResolved()) {
+                childTasks.add(tmp);
             }
             E.remove();
         }
@@ -104,5 +111,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     public final Deferred<R> getResult() {
         return myTaskDeferred;
+        //TODO: replace method body with real implementation
     }
 }
