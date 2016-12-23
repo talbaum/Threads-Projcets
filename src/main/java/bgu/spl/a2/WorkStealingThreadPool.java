@@ -31,9 +31,10 @@ public class WorkStealingThreadPool {
     public WorkStealingThreadPool(int nthreads) {
         myProcessors=new Processor[nthreads];
         myThreads = new Thread[nthreads];
+        myQues = new LinkedBlockingDeque[nthreads];
         for (int i=0;i<myProcessors.length;i++){
             myProcessors[i]=new Processor(i,this);
-            myQues[i]=new LinkedBlockingDeque<Task<?>>();
+            myQues[i]=new LinkedBlockingDeque<>();
             myThreads[i]= new Thread(myProcessors[i]);
         }
     }
@@ -46,7 +47,7 @@ public class WorkStealingThreadPool {
     public void submit(Task<?> task) {
         int randProcess = (int)Math.random()*(myProcessors.length-1);
         myProcessors[randProcess].addTask(task);
-        monitor.inc();//check
+       // monitor.inc();
     }
 
     /**

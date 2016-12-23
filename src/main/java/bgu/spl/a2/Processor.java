@@ -53,11 +53,11 @@ public class Processor implements Runnable {
     }
 
     void steal(){
-        int whereToSteal=id+1%pool.myProcessors.length;
+        int whereToSteal=(id+1)%(pool.myProcessors.length);
         int startVersion=pool.monitor.getVersion();
 
         while(pool.myQues[whereToSteal].size()<=1) {
-            whereToSteal=whereToSteal+1%pool.myProcessors.length;
+            whereToSteal=(whereToSteal+1)%pool.myProcessors.length;
 
             if(whereToSteal==id){ //why we need the try and catch?? need to test the await function again.
                 try {

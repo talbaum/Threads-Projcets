@@ -42,7 +42,7 @@ public class VersionMonitorTest {
     @Test
     public void getVersion() throws Exception {
         try {
-            assertTrue("version should be 0", tester.getVersion() == 0);
+            assertTrue("version should be 1", tester.getVersion() == 1);
         }
         catch(Exception e){
             assertNull("getVersion returned null", tester.getVersion());
@@ -57,11 +57,11 @@ public class VersionMonitorTest {
     @Test
     public void inc() throws Exception {
         try {
-            assertFalse("version shouldnt be 1", tester.getVersion()==1);
-            assertTrue("version should be 0", tester.getVersion()==0);
+            assertTrue("version should be 1", tester.getVersion()==1);
+            assertFalse("version shouldnt be "+tester.getVersion(), tester.getVersion()==0);
             tester.inc();
-            assertTrue("version should be 1", tester.getVersion() == 1);
-            assertFalse("version shouldnt be 0", tester.getVersion()==0);
+            assertTrue("version should be 2", tester.getVersion() == 2);
+            assertFalse("version shouldnt be 1", tester.getVersion()==1);
         }
         catch(Exception e) {
             System.out.println("Unexpected inc error");
@@ -78,8 +78,8 @@ public class VersionMonitorTest {
     public void await() throws Exception {
         Runnable check= ()->{
             try {
-                flag=true;
                 int theVersion=tester.getVersion();
+                flag=true;
                 tester.await(theVersion);
                 VersionMonitorTest.testingVal=40;
             }
@@ -90,6 +90,11 @@ public class VersionMonitorTest {
 
         Runnable check2= ()->{
             while (!flag){
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             tester.inc();
         };
