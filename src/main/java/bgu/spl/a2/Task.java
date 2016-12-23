@@ -42,19 +42,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final synchronized void handle(Processor handler) {
+        boolean DoneYet=true;
+        ///////we need a boolean for start and to see what come first (maybe start?) and check that start runs only once.
         if (!myTaskDeferred.isResolved()) {
             myProcessor = handler;
+            ConcurrentLinkedQueue<Task<?>> childTasks2 = new ConcurrentLinkedQueue<>();
             while (!childTasks.isEmpty()) {
                 Task<?> tmp = childTasks.poll();
                 if (!tmp.getResult().isResolved()) {
                     //Runnable callback = () -> myProcessor.addTask(this);
                     //tmp.getResult().whenResolved(callback);
                     spawn(tmp);
-                    childTasks.add(tmp);
+                    childTasks2.add(tmp);
+                    DoneYet=false;
                     //myProcessor.run();
                 }
             }
+            childTasks.addAll(childTasks2);
             //exit here only when there is no more childtasks
+            if (DoneYet)
             start();
         }
     }

@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class WorkStealingThreadPool {
     Processor [] myProcessors;
     LinkedBlockingDeque<Task<?>>[] myQues;
+    Thread[] myThreads;
     VersionMonitor monitor= new VersionMonitor();
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
@@ -29,9 +30,11 @@ public class WorkStealingThreadPool {
      */
     public WorkStealingThreadPool(int nthreads) {
         myProcessors=new Processor[nthreads];
+        myThreads = new Thread[nthreads];
         for (int i=0;i<myProcessors.length;i++){
             myProcessors[i]=new Processor(i,this);
             myQues[i]=new LinkedBlockingDeque<Task<?>>();
+            myThreads[i]= new Thread(myProcessors[i]);
         }
     }
 
@@ -60,16 +63,25 @@ public class WorkStealingThreadPool {
      */
     public void shutdown() throws InterruptedException {
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        for (int i=0;i<myProcessors.length;i++){
+            myThreads[i].interrupt();
+        }
+        int i=0;
+        while (i<myThreads.length){
+            if (myThreads[i].isInterrupted())
+            i++;
+        }
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
      * start the threads belongs to this thread pool
      */
     public void start() {
-        //TODO: replace method body with real implementation
-
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        for (int i=0;i<myProcessors.length;i++){
+            myThreads[i].start();
+        }
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }

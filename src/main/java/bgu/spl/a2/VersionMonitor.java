@@ -31,9 +31,8 @@ public class VersionMonitor {
         notifyAll();
     }
 
-    public void await(int version) throws InterruptedException {
-        //TODO: replace method body with real implementation
-            while (this.version == version) {
+    public void await(int myversion) throws InterruptedException {
+            while (this.version == myversion) {
                 wait();
             }
     }
