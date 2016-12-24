@@ -55,10 +55,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
             while ((i>0)&(!childTasks.isEmpty())) {
                 i--;
                 Task<?> tmp = childTasks.poll();
-                if (!tmp.getResult().isResolved()) {
+                if ((tmp!=null)&&(!tmp.getResult().isResolved())) {
                     spawn(tmp);
                 }
-
             }
             myProcessor.addTask(this);
         }
@@ -120,9 +119,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
                 I.remove();
         }
         if (childTasks.isEmpty()){
+            if (!myTaskDeferred.isResolved())
             myTaskDeferred.resolve(result);
         }
         else{
+            if ((!myTaskDeferred.isResolved())&((!childTasks.isEmpty())))
             childTasks.peek().myTaskDeferred.whenResolved(callCompleteAgain);
         }
     }
