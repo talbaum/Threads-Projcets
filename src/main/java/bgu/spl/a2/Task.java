@@ -16,9 +16,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @param <R> the task result type
  */
  public abstract class Task<R> {
-    private ConcurrentLinkedQueue<Task<?>> childTasks;
+    private ConcurrentLinkedQueue<Task<?>> childTasks = new ConcurrentLinkedQueue<Task<?>>();
     Deferred<R> myTaskDeferred= new Deferred<>();
     Processor myProcessor;
+    boolean hasStarted=false;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -42,32 +43,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final synchronized void handle(Processor handler) {
+        if (!hasStarted){
+            start();
+            hasStarted=true;
+        }
 
-        boolean DoneYet=false;
-        ///////we need a boolean for start and to see what come first (maybe start?) and check that start runs only once.
         if (!myTaskDeferred.isResolved()) {
             myProcessor = handler;
-            ConcurrentLinkedQueue<Task<?>> childTasks2 = new ConcurrentLinkedQueue<>();
-            while (!childTasks.isEmpty()) {
+            int i=childTasks.size();
+            while ((i>0)&(!childTasks.isEmpty())) {
+                i++;
                 Task<?> tmp = childTasks.poll();
                 if (!tmp.getResult().isResolved()) {
-                    //Runnable callback = () -> myProcessor.addTask(this);
-                    //tmp.getResult().whenResolved(callback);
                     spawn(tmp);
-                    childTasks2.add(tmp);
-                    DoneYet=false;
-                    //myProcessor.run();
                 }
+
             }
-            childTasks.addAll(childTasks2);
-            if (!DoneYet) {
-                this.start();
-                DoneYet=true;
-            }
-            //exit here only when there is no more childtasks
-            //if (DoneYet)
-            //start();
+            myProcessor.addTask(this);
         }
+
     }
 
     /**
@@ -78,6 +72,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     protected final void spawn(Task<?>... task) {  //maybe sync
         for (Task<?> curTask:task){
+            childTasks.add(curTask);
         myProcessor.addTask(curTask);
         }
     }
@@ -93,14 +88,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
-        //write how to check if all the given tasks are resolved!
-        //
-        //
+
         Iterator<? extends Task<?>> E = tasks.iterator();
         while (E.hasNext()){
             Task<?> tmp =E.next();
             if (!tmp.getResult().isResolved()) {
-                childTasks.add(tmp);
+                if (!childTasks.contains(tmp)) {
+                    childTasks.add(tmp);
+                }
             }
             E.remove();
         }

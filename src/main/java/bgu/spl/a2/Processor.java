@@ -75,7 +75,7 @@ public class Processor implements Runnable {
         //if there there is tasks to steal get here.
 
         if ((!awake)&(whereToSteal!=id)){ //if the tasks are not my own get in
-            int numOfTasksToSteal=pool.myQues[whereToSteal].size()/2;
+            int numOfTasksToSteal=(pool.myQues[whereToSteal].size()/2)-1;
             int stealCount=0;
             while(stealCount<numOfTasksToSteal){
                 try {
