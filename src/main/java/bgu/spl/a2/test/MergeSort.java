@@ -24,9 +24,8 @@ public class MergeSort extends Task<int[]> {
     protected void start() {
 
         if (array.length>1){
-
             int[] firstHalf = Arrays.copyOfRange(array,0,array.length/2);
-            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length+1);
+            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length);
             MergeSort task1 = new MergeSort(firstHalf);
             MergeSort task2 = new MergeSort(secondHalf);
             //callback test () ->
@@ -79,7 +78,7 @@ public class MergeSort extends Task<int[]> {
         System.out.print("got here!");
         //int n = 10; //you may check on different number of elements if you like
         //int[] array = new Random().ints(n).toArray();
-        int[] array = {1,3,4,2,5,7,6,10,9,8};
+        int[] array = {1,0};
 
         MergeSort task = new MergeSort(array);
 

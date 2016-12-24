@@ -43,16 +43,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final synchronized void handle(Processor handler) {
+        myProcessor = handler;
         if (!hasStarted){
             start();
             hasStarted=true;
         }
 
         if (!myTaskDeferred.isResolved()) {
-            myProcessor = handler;
             int i=childTasks.size();
             while ((i>0)&(!childTasks.isEmpty())) {
-                i++;
+                i--;
                 Task<?> tmp = childTasks.poll();
                 if (!tmp.getResult().isResolved()) {
                     spawn(tmp);
