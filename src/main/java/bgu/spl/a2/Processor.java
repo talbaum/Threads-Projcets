@@ -42,18 +42,19 @@ public class Processor implements Runnable {
     @Override
     public void run() {
         //need a while on all with boolean, so it will run until shutdown maybe??
-    while (!pool.toShutDown) {
-        if (pool.myQues[id].isEmpty()) {
-            steal();
-        }
-        else {
-            while (!pool.myQues[id].isEmpty()) {
-                pool.myQues[id].pollFirst().handle(this);
+        while (!pool.toShutDown) {
+            if (pool.myQues[id].isEmpty()) {
+                steal();
+            } else {
+                while (!pool.myQues[id].isEmpty()) {
+                    Task<?> tmp = pool.myQues[id].pollFirst();
+                    if (tmp!=null) {
+                        tmp.handle(this);
+                    }
+                }
             }
         }
     }
-    }
-
     void steal(){
         int whereToSteal=(id+1)%(pool.myProcessors.length);
         int startVersion=pool.monitor.getVersion();
