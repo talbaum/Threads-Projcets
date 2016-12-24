@@ -37,11 +37,9 @@ public class MergeSort extends Task<int[]> {
             task1.whenResolved(list, () ->{
                 this.complete(merge(task1.getResult().get(),task2.getResult().get()));
             });
-
         }
         else complete(array);
-        //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+
     }
 
     public static int[] merge(int[] a, int[] b) {
@@ -85,7 +83,7 @@ public class MergeSort extends Task<int[]> {
             l.countDown();
         });
 
-        //l.await();
+        l.await();
         pool.shutdown();
     }
 

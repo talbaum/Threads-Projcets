@@ -61,7 +61,8 @@ public class Processor implements Runnable {
 
             if(whereToSteal==id){ //why we need the try and catch?? need to test the await function again.
                 try {
-                    pool.monitor.await(startVersion); // sleeps until new tasks are coming
+                    pool.monitor.await(startVersion);
+                    startVersion=pool.monitor.getVersion();// sleeps until new tasks are coming
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
