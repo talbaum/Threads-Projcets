@@ -68,9 +68,9 @@ public class Processor implements Runnable {
                     startVersion=pool.monitor.getVersion();// sleeps until new tasks are coming
                     awake=true;
                 } catch (InterruptedException e) {
-                  //  e.printStackTrace();
+                   // e.printStackTrace();
                     System.out.println("Interrupted Stealing Exception");
-                    break;
+                    //break;
                 }
             }
         }

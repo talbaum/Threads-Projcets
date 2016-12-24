@@ -21,11 +21,12 @@ public class MergeSort extends Task<int[]> {
     }
 
     @Override
-    protected void start() {
+    protected synchronized void start() {
 
         if (array.length>1){
+
             int[] firstHalf = Arrays.copyOfRange(array,0,array.length/2);
-            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length);
+            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length+1);
             MergeSort task1 = new MergeSort(firstHalf);
             MergeSort task2 = new MergeSort(secondHalf);
             //callback test () ->
@@ -44,6 +45,7 @@ public class MergeSort extends Task<int[]> {
             });
         }
         else {
+
             complete(array);
         }
 
@@ -75,10 +77,10 @@ public class MergeSort extends Task<int[]> {
 
     public static void main(String[] args) throws InterruptedException {
         WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
-        System.out.print("got here!");
+        //System.out.print("got here!");
         //int n = 10; //you may check on different number of elements if you like
         //int[] array = new Random().ints(n).toArray();
-        int[] array = {1,0};
+        int[] array = {1,3};
 
         MergeSort task = new MergeSort(array);
 

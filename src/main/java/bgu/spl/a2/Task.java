@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
         }
 
         if (!myTaskDeferred.isResolved()) {
+
             int i=childTasks.size();
             while ((i>0)&(!childTasks.isEmpty())) {
                 i--;
@@ -70,10 +71,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      *
      * @param task the task to execute
      */
-    protected final void spawn(Task<?>... task) {  //maybe sync
+    protected synchronized final void spawn(Task<?>... task) {  //maybe sync
         for (Task<?> curTask:task){
             childTasks.add(curTask);
-        myProcessor.addTask(curTask);
+            myProcessor.addTask(curTask);
         }
     }
 
@@ -87,7 +88,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param tasks
      * @param callback the callback to execute once all the results are resolved
      */
-    protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
+    protected synchronized final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
 
         Iterator<? extends Task<?>> E = tasks.iterator();
         while (E.hasNext()){
@@ -109,7 +110,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
-        myTaskDeferred.resolve(result);
+
+        Runnable callCompleteAgain = () -> this.complete(result);
+
+        Iterator<Task<?>> I = childTasks.iterator();
+
+        while (I.hasNext()){
+            if (I.next().getResult().isResolved())
+                I.remove();
+        }
+        if (childTasks.isEmpty()){
+            myTaskDeferred.resolve(result);
+        }
+        else{
+            childTasks.peek().myTaskDeferred.whenResolved(callCompleteAgain);
+        }
     }
 
     /**
