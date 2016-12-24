@@ -16,6 +16,7 @@ public class WorkStealingThreadPool {
     LinkedBlockingDeque<Task<?>>[] myQues;
     Thread[] myThreads;
     VersionMonitor monitor= new VersionMonitor();
+    boolean toShutDown=false;
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
      * {@link Processor}s. Note, threads should not get started until calling to
@@ -64,6 +65,7 @@ public class WorkStealingThreadPool {
      */
     public void shutdown() throws InterruptedException {
         //TODO: replace method body with real implementation
+        toShutDown=true;
         for (int i=0;i<myProcessors.length;i++){
             myThreads[i].interrupt();
         }
@@ -72,6 +74,7 @@ public class WorkStealingThreadPool {
             if (myThreads[i].isInterrupted())
             i++;
         }
+
         //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
