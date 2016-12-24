@@ -73,6 +73,7 @@ public class WorkStealingThreadPool {
         while (i<myThreads.length){
             if (myThreads[i].isInterrupted())
             i++;
+
         }
 
         //throw new UnsupportedOperationException("Not Implemented Yet.");

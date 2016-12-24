@@ -5,8 +5,10 @@
  */
 package bgu.spl.a2.test;
 
+import bgu.spl.a2.Deferred;
 import bgu.spl.a2.Task;
 import bgu.spl.a2.WorkStealingThreadPool;
+import com.sun.javafx.tk.Toolkit;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -26,7 +28,7 @@ public class MergeSort extends Task<int[]> {
         if (array.length>1){
 
             int[] firstHalf = Arrays.copyOfRange(array,0,array.length/2);
-            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length+1);
+            int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length);
             MergeSort task1 = new MergeSort(firstHalf);
             MergeSort task2 = new MergeSort(secondHalf);
             //callback test () ->
@@ -37,10 +39,6 @@ public class MergeSort extends Task<int[]> {
             List<MergeSort> list = new ArrayList<MergeSort>();
             list.add(task2);
             task1.whenResolved(list, () ->{
-                //System.out.println("im here: " + Arrays.toString(task1.getResult().get()));
-                //for (int i=0;i<task1.getResult().get().length;i++)
-                 //   System.out.print(","+task1.getResult().get()[i]);
-                //System.out.println(",");
                 this.complete(merge(task1.getResult().get(),task2.getResult().get()));
             });
         }
@@ -78,9 +76,9 @@ public class MergeSort extends Task<int[]> {
     public static void main(String[] args) throws InterruptedException {
         WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
         //System.out.print("got here!");
-        //int n = 10; //you may check on different number of elements if you like
-        //int[] array = new Random().ints(n).toArray();
-        int[] array = {1,3};
+        int n = 1000; //you may check on different number of elements if you like
+        int[] array = new Random().ints(n).toArray();
+       // int[] array = {1,2};
 
         MergeSort task = new MergeSort(array);
 
@@ -93,8 +91,9 @@ public class MergeSort extends Task<int[]> {
             l.countDown();
         });
 
-        l.await();
+         l.await();
         pool.shutdown();
+        System.out.println("great success");
     }
 
 }

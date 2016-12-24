@@ -110,8 +110,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
-
-        Runnable callCompleteAgain = () -> this.complete(result);
+        //myTaskDeferred.resolve(result);
+       Runnable callCompleteAgain = () -> this.complete(result);
 
         Iterator<Task<?>> I = childTasks.iterator();
 
