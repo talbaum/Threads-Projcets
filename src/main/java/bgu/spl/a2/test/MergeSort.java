@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package bgu.spl.a2.test;
-
+import java.util.Timer;
 import bgu.spl.a2.Deferred;
 import bgu.spl.a2.Task;
 import bgu.spl.a2.WorkStealingThreadPool;
@@ -74,12 +74,13 @@ public class MergeSort extends Task<int[]> {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
-        int n = 100; //you may check on different number of elements if you like
-        // int[] array = new Random().ints(n).toArray();
-        int[] array = new int[n];
-        for (int i=0;i<n;i++)
-            array[i]=i;
+        long tStart = System.currentTimeMillis();
+        WorkStealingThreadPool pool = new WorkStealingThreadPool(100);
+        int n = 10000; //you may check on different number of elements if you like
+         int[] array = new Random().ints(n).toArray();
+        //int[] array = new int[n];
+        //for (int i=0;i<n;i++)
+        //    array[i]=i;
 
         MergeSort task = new MergeSort(array);
 
@@ -94,7 +95,11 @@ public class MergeSort extends Task<int[]> {
 
          l.await();
         pool.shutdown();
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
         System.out.println("great success");
+        System.out.println(elapsedSeconds+" seconds");
     }
 
 }

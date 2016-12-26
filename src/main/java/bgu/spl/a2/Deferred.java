@@ -87,6 +87,7 @@ public class Deferred<T> {
                 }
             }
         }
+        //System.out.println("resolve");
     }
 
     /**
