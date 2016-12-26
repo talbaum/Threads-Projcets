@@ -103,11 +103,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
         for (Task<?> task : tasks) {
             if (!task.getResult().isResolved()) {
-                //if (!childTasks.contains(task))
-                    childTasks.add(task);
+                if (!childTasks.contains(task))
+                    spawn(task);
             }
         }
-        myTaskDeferred.whenResolved(callback);
+        if (childTasks.isEmpty()){
+            callback.run();
+        }
+        else{
+            Runnable callback2 = () -> whenResolved(tasks,callback);
+            childTasks.peek().getResult().whenResolved(callback2);
+        }
     }
 /*
         Iterator<? extends Task<?>> E = tasks.iterator();

@@ -32,18 +32,16 @@ public class MergeSort extends Task<int[]> {
             MergeSort task1 = new MergeSort(firstHalf);
             MergeSort task2 = new MergeSort(secondHalf);
 
-            this.spawn(task1);
-            this.spawn(task2);
-
+            spawn(task1,task2);
 
             List<MergeSort> list = new ArrayList<MergeSort>();
             list.add(task2);
-            task1.whenResolved(list, () ->{
+            list.add(task1);
+            whenResolved(list, () ->{
                 this.complete(merge(task1.getResult().get(),task2.getResult().get()));
             });
         }
         else {
-
             complete(array);
         }
 
