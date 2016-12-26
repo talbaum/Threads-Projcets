@@ -1,7 +1,8 @@
  package bgu.spl.a2;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
+ /**
  * this class represents a deferred result i.e., an object that eventually will
  * be resolved to hold a result of some operation, the class allows for getting
  * the result once it is available and registering a callback that will be
@@ -19,7 +20,8 @@ public class Deferred<T> {
 
     private T myObject;
     //private Object Lock;
-    LinkedList<Runnable> doAfterResolve = new LinkedList<>();
+    ConcurrentLinkedQueue<Runnable> doAfterResolve = new ConcurrentLinkedQueue<>();
+    //LinkedList<Runnable> doAfterResolve = new LinkedList<>();
     boolean resolved = false;
     boolean whenResolvedFirst=false;
 
@@ -75,7 +77,7 @@ public class Deferred<T> {
                     try {
                         while (!doAfterResolve.isEmpty()) {
                             //  System.out.println("doAfterResolve isnt empty. run the callback.");
-                            Runnable tmp =doAfterResolve.pollFirst();
+                            Runnable tmp =doAfterResolve.poll();
                             tmp.run();
                         }
                     }
