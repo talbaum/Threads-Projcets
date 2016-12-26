@@ -100,25 +100,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
-
-        for (Task<?> task : tasks) {
-            if (task.getResult().isResolved()) {
-            tasks.remove(task);
+    boolean foundOne=false;
+        Iterator<? extends Task<?>> IT = tasks.iterator();
+        while ((!foundOne)&(IT.hasNext())){
+            Task<?> tmp = IT.next();
+            if (tmp.getResult().isResolved()){
+                IT.remove();
+            }
+            else if (!foundOne){
+                Runnable callback2 = () -> whenResolved(tasks, callback);
+                tmp.myTaskDeferred.whenResolved(callback2);
+                foundOne=true;
             }
         }
-        if (tasks.isEmpty()){
+        if (!foundOne){
             callback.run();
         }
-        else{
-            Runnable callback2 = () -> whenResolved(tasks,callback);
-
-            Iterator IT = tasks.iterator();
-            Task<R> tmp  = (Task<R>)IT.next();
-            IT.remove();
-            tmp.getResult().whenResolved(callback2);
-            tasks.add(tmp);
-        }
     }
+
+
+
 
     /**
      * resolve the internal result - should be called by the task derivative
