@@ -102,32 +102,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
 
         for (Task<?> task : tasks) {
-            if (!task.getResult().isResolved()) {
-                if (!childTasks.contains(task))
-                    spawn(task);
+            if (task.getResult().isResolved()) {
+            tasks.remove(task);
             }
         }
-        if (childTasks.isEmpty()){
+        if (tasks.isEmpty()){
             callback.run();
         }
         else{
             Runnable callback2 = () -> whenResolved(tasks,callback);
-            childTasks.peek().getResult().whenResolved(callback2);
+
+            Iterator IT = tasks.iterator();
+            Task<R> tmp  = (Task<R>)IT.next();
+            IT.remove();
+            tmp.getResult().whenResolved(callback2);
+            tasks.add(tmp);
         }
     }
-/*
-        Iterator<? extends Task<?>> E = tasks.iterator();
-        while (E.hasNext()){
-            Task<?> tmp =E.next();
-            if (!tmp.getResult().isResolved()) {
-                if (!childTasks.contains(tmp))
-                    childTasks.add(tmp);
-            }
-            E.remove();
-        }
-        myTaskDeferred.whenResolved(callback);
-
-    }*/
 
     /**
      * resolve the internal result - should be called by the task derivative
