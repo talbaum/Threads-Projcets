@@ -21,6 +21,7 @@ public class Deferred<T> {
     //private Object Lock;
     LinkedList<Runnable> doAfterResolve = new LinkedList<>();
     boolean resolved = false;
+    boolean whenResolvedFirst=false;
 
     /**
      * @return the resolved value if such exists (i.e., if this object has been
@@ -55,7 +56,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this object is already
      *                               resolved
      */
-    public synchronized void resolve(T value) {
+    public  void resolve(T value) {
         //TODO: replace method body with real implementation
         //synchronized (Lock) {
         if (value == null) {
@@ -66,12 +67,22 @@ public class Deferred<T> {
                 throw new IllegalStateException("this object has already been resolved!");
             } else {
                 myObject = value;
+              //  System.out.println("object got value");
                 resolved = true;
-                    while (!doAfterResolve.isEmpty()) {
-                        doAfterResolve.getFirst().run();
-                        doAfterResolve.removeFirst();
+               // System.out.println("did i visited when resolved before resolve? " + whenResolvedFirst);
+                //System.out.println("doAfterResolve size: "+ doAfterResolve.size());
+                if(whenResolvedFirst) {
+                    try {
+                        while (!doAfterResolve.isEmpty()) {
+                            //  System.out.println("doAfterResolve isnt empty. run the callback.");
+                            doAfterResolve.getFirst().run();
+                            doAfterResolve.removeFirst();
+                        }
                     }
-
+                    catch (Exception e){
+                        System.out.println("doAfterResolve exception (in deffered class)");
+                    }
+                }
             }
         }
     }
@@ -94,10 +105,13 @@ public class Deferred<T> {
             throw new IllegalStateException("the callback sent to deferred is null!");
         }
         else {
-            if (isResolved()) {
+            if (resolved) {
                 callback.run();
             } else {
+               // System.out.println("entered when resolved deffered");
+                whenResolvedFirst=true;
                 doAfterResolve.add(callback);
+               // System.out.println("doAfterResolve size at whenResolved "+ doAfterResolve.size());
             }
         }
     }

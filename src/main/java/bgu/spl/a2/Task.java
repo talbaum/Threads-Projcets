@@ -50,16 +50,27 @@ import java.util.concurrent.ConcurrentLinkedQueue;
         }
 
         if (!myTaskDeferred.isResolved()) {
-
-            int i=childTasks.size();
-            while ((i>0)&(!childTasks.isEmpty())) {
-                i--;
-                Task<?> tmp = childTasks.poll();
-                if ((tmp!=null)&&(!tmp.getResult().isResolved())) {
-                    spawn(tmp);
+            int i = childTasks.size();
+            if (i > 0) {
+                while ((i > 0) & (!childTasks.isEmpty())) {
+                    i--;
+                    Task<?> tmp = childTasks.poll();
+                    if ((tmp != null) && (!tmp.getResult().isResolved())) {
+                        spawn(tmp);
+                    }
+                }
+                myProcessor.addTask(this);
+            }
+        }
+        else{
+           try {
+                    for (Runnable callback : myTaskDeferred.doAfterResolve) {
+                            callback.run();
                 }
             }
-            myProcessor.addTask(this);
+            catch (Exception e){
+                System.out.println("running all the callbacks null exception (in task class) ");
+            }
         }
 
     }
@@ -87,20 +98,29 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param tasks
      * @param callback the callback to execute once all the results are resolved
      */
-    protected synchronized final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
+    protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
 
+        for (Task<?> task : tasks) {
+            if (!task.getResult().isResolved()) {
+                if (!childTasks.contains(task))
+                    childTasks.add(task);
+            }
+            myTaskDeferred.whenResolved(callback);
+        }
+    }
+/*
         Iterator<? extends Task<?>> E = tasks.iterator();
         while (E.hasNext()){
             Task<?> tmp =E.next();
             if (!tmp.getResult().isResolved()) {
-                if (!childTasks.contains(tmp)) {
+                if (!childTasks.contains(tmp))
                     childTasks.add(tmp);
-                }
             }
             E.remove();
         }
         myTaskDeferred.whenResolved(callback);
-    }
+
+    }*/
 
     /**
      * resolve the internal result - should be called by the task derivative
@@ -119,8 +139,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
                 I.remove();
         }
         if (childTasks.isEmpty()){
-            if (!myTaskDeferred.isResolved())
-            myTaskDeferred.resolve(result);
+            if (!myTaskDeferred.isResolved()) {
+                myTaskDeferred.resolve(result);
+            }
+
         }
         else{
             if ((!myTaskDeferred.isResolved())&((!childTasks.isEmpty())))

@@ -46,7 +46,7 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
-        int randProcess = (int)Math.random()*(myProcessors.length-1);
+        int randProcess = (int)(Math.random()*(myProcessors.length-1));
         myProcessors[randProcess].addTask(task);
        // monitor.inc();
     }
@@ -66,15 +66,30 @@ public class WorkStealingThreadPool {
     public void shutdown() throws InterruptedException {
         //TODO: replace method body with real implementation
         toShutDown=true;
-        for (int i=0;i<myProcessors.length;i++){
+        for (int i=0;i<myThreads.length;i++) {
             myThreads[i].interrupt();
+            myThreads[i].join();
         }
-        int i=0;
-        while (i<myThreads.length){
-            if (myThreads[i].isInterrupted())
-            i++;
 
+  //  while(!checkIntereptud(myThreads)){}
+/*        int i=0;
+    while(i<myThreads.length) {
+        if(myThreads[i].isInterrupted())
+            i++;
+        else{
+            try {
+                wait(30000);
+            }catch (Exception e){}
         }
+    }*/
+    }
+
+    private boolean checkIntereptud (Thread[] arr){
+        for (int i=0;i<myThreads.length;i++)
+            if(!myThreads[i].isInterrupted())
+               return false;
+
+            return true;
     }
 
     /**

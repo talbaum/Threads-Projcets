@@ -55,43 +55,41 @@ public class Processor implements Runnable {
             }
         }
     }
-    void steal(){
-        int whereToSteal=(id+1)%(pool.myProcessors.length);
-        int startVersion=pool.monitor.getVersion();
-        boolean awake=false;
+    void steal() {
+        int whereToSteal = (id + 1) % (pool.myProcessors.length);
+        int startVersion = pool.monitor.getVersion();
+        boolean awake = false;
 
-        while(!awake&&(pool.myQues[whereToSteal].size()<=1)) {
-            whereToSteal=(whereToSteal+1)%pool.myProcessors.length;
+        while (!awake && (pool.myQues[whereToSteal].size() <= 1)) {
+            whereToSteal = (whereToSteal + 1) % pool.myProcessors.length;
 
-            if(whereToSteal==id){ //why we need the try and catch?? need to test the await function again.
+            if (whereToSteal == id) { //why we need the try and catch?? need to test the await function again.
                 try {
                     pool.monitor.await(startVersion);
-                    startVersion=pool.monitor.getVersion();// sleeps until new tasks are coming
-                    awake=true;
+                    startVersion = pool.monitor.getVersion();// sleeps until new tasks are coming
+                    awake = true;
                 } catch (InterruptedException e) {
-                   // e.printStackTrace();
-                    System.out.println("Interrupted Stealing Exception");
+                    // e.printStackTrace();
+                   // System.out.println("Interrupted Stealing");
                     //break;
                 }
             }
         }
-        //if there there is tasks to steal get here.
+            //if there there is tasks to steal get here.
 
-        if ((!awake)&(whereToSteal!=id)){ //if the tasks are not my own get in
-            int numOfTasksToSteal=(pool.myQues[whereToSteal].size()/2)-1;
-            int stealCount=0;
-            while(stealCount<numOfTasksToSteal){
-                try {
-                    addTask(pool.myProcessors[whereToSteal].removeTask());
-                    stealCount++;
-                }
-                catch (Exception e){
-                    break; //no more tasks to remove
+            if ((!awake) & (whereToSteal != id)) { //if the tasks are not my own get in
+                int numOfTasksToSteal = (pool.myQues[whereToSteal].size() / 2) - 1;
+                int stealCount = 0;
+                while (stealCount < numOfTasksToSteal) {
+                    try {
+                        addTask(pool.myProcessors[whereToSteal].removeTask());
+                        stealCount++;
+                    } catch (Exception e) {
+                        break; //no more tasks to remove
+                    }
                 }
             }
-        }
     }
-
     void addTask(Task<?> task){
         if (task!=null) {
             pool.myQues[id].add(task);
