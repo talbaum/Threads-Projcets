@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @param <R> the task result type
  */
  public abstract class Task<R> {
-    private ConcurrentLinkedQueue<Task<?>> childTasks = new ConcurrentLinkedQueue<Task<?>>();
+    ConcurrentLinkedQueue<Task<?>> childTasks = new ConcurrentLinkedQueue<Task<?>>();
     Deferred<R> myTaskDeferred= new Deferred<>();
     Processor myProcessor;
     boolean hasStarted=false;
@@ -65,7 +65,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
         else{
            try {
                     for (Runnable callback : myTaskDeferred.doAfterResolve) {
-                            callback.run();
+                        Runnable tmp = myTaskDeferred.doAfterResolve.poll();
+                        tmp.run();
                 }
             }
             catch (Exception e){
@@ -105,8 +106,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
                 if (!childTasks.contains(task))
                     childTasks.add(task);
             }
-            myTaskDeferred.whenResolved(callback);
         }
+        myTaskDeferred.whenResolved(callback);
     }
 /*
         Iterator<? extends Task<?>> E = tasks.iterator();
@@ -128,7 +129,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      *
      * @param result - the task calculated result
      */
-    protected final void complete(R result) {
+    protected  synchronized final void complete(R result) {
         //myTaskDeferred.resolve(result);
        Runnable callCompleteAgain = () -> this.complete(result);
 

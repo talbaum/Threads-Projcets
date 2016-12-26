@@ -75,8 +75,8 @@ public class Deferred<T> {
                     try {
                         while (!doAfterResolve.isEmpty()) {
                             //  System.out.println("doAfterResolve isnt empty. run the callback.");
-                            doAfterResolve.getFirst().run();
-                            doAfterResolve.removeFirst();
+                            Runnable tmp =doAfterResolve.pollFirst();
+                            tmp.run();
                         }
                     }
                     catch (Exception e){

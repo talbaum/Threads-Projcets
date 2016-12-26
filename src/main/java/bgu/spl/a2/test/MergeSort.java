@@ -31,7 +31,7 @@ public class MergeSort extends Task<int[]> {
             int[] secondHalf = Arrays.copyOfRange(array,array.length/2,array.length);
             MergeSort task1 = new MergeSort(firstHalf);
             MergeSort task2 = new MergeSort(secondHalf);
-            //callback test () ->
+
             this.spawn(task1);
             this.spawn(task2);
 
