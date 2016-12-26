@@ -31,7 +31,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this method is called and
      *                               this object is not yet resolved
      */
-    public synchronized T get() throws IllegalStateException {
+    public T get() throws IllegalStateException {
         if (myObject != null)
             return myObject;
         else
@@ -42,7 +42,7 @@ public class Deferred<T> {
      * @return true if this object has been resolved - i.e., if the method
      * {@link #resolve(java.lang.Object)} has been called on this object before.
      */
-    public synchronized boolean isResolved() {
+    public boolean isResolved() {
         return resolved;
     }
 
@@ -58,7 +58,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this object is already
      *                               resolved
      */
-    public  void resolve(T value) {
+    public synchronized void resolve(T value) {
         //TODO: replace method body with real implementation
         //synchronized (Lock) {
         if (value == null) {

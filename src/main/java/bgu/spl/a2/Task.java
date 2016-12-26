@@ -82,7 +82,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      *
      * @param task the task to execute
      */
-    protected synchronized final void spawn(Task<?>... task) {  //maybe sync
+    protected final void spawn(Task<?>... task) {  //maybe sync
         for (Task<?> curTask:task){
             childTasks.add(curTask);
             myProcessor.addTask(curTask);
@@ -103,7 +103,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
         for (Task<?> task : tasks) {
             if (!task.getResult().isResolved()) {
-                if (!childTasks.contains(task))
+                //if (!childTasks.contains(task))
                     childTasks.add(task);
             }
         }
