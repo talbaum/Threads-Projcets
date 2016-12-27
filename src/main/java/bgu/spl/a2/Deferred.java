@@ -19,11 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Deferred<T> {
 
     private T myObject;
-    //private Object Lock;
     ConcurrentLinkedQueue<Runnable> doAfterResolve = new ConcurrentLinkedQueue<>();
-    //LinkedList<Runnable> doAfterResolve = new LinkedList<>();
     boolean resolved = false;
-    boolean whenResolvedFirst=false;
 
     /**
      * @return the resolved value if such exists (i.e., if this object has been
@@ -60,7 +57,6 @@ public class Deferred<T> {
      */
     public synchronized void resolve(T value) {
         //TODO: replace method body with real implementation
-        //synchronized (Lock) {
         if (value == null) {
             throw new IllegalStateException("resolve has got a null value!");
         }
@@ -69,14 +65,9 @@ public class Deferred<T> {
                 throw new IllegalStateException("this object has already been resolved!");
             } else {
                 myObject = value;
-              //  System.out.println("object got value");
                 resolved = true;
-               // System.out.println("did i visited when resolved before resolve? " + whenResolvedFirst);
-                //System.out.println("doAfterResolve size: "+ doAfterResolve.size());
-                if(whenResolvedFirst) {
                     try {
                         while (!doAfterResolve.isEmpty()) {
-                            //  System.out.println("doAfterResolve isnt empty. run the callback.");
                             Runnable tmp =doAfterResolve.poll();
                             tmp.run();
                         }
@@ -86,8 +77,6 @@ public class Deferred<T> {
                     }
                 }
             }
-        }
-        //System.out.println("resolve");
     }
 
     /**
@@ -110,12 +99,8 @@ public class Deferred<T> {
         else {
             if (resolved) {
                 callback.run();
-            } else {
-               // System.out.println("entered when resolved deffered");
-                whenResolvedFirst=true;
+            } else
                 doAfterResolve.add(callback);
-               // System.out.println("doAfterResolve size at whenResolved "+ doAfterResolve.size());
-            }
         }
     }
 }

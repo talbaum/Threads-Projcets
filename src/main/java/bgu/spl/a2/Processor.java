@@ -17,7 +17,6 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-    //LinkedBlockingDeque <Task<?>> myTasks;
     /**
      * constructor for this class
      *
@@ -41,7 +40,6 @@ public class Processor implements Runnable {
 
     @Override
     public void run() {
-        //need a while on all with boolean, so it will run until shutdown maybe??
         while (!pool.toShutDown) {
             if (pool.myQues[id].isEmpty()) {
                 steal();
@@ -67,25 +65,26 @@ public class Processor implements Runnable {
             if (whereToSteal == id) { //why we need the try and catch?? need to test the await function again.
                 try {
                     pool.monitor.await(startVersion);
-                    startVersion = pool.monitor.getVersion();// sleeps until new tasks are coming
                     awake = true;
-                } catch (InterruptedException e) {
-                    // e.printStackTrace();
-                   // System.out.println("Interrupted Stealing");
-                    //break;
+                } catch (Exception e) {
+                    System.out.println(e.getMessage() + " STEALING PROBLEM");
                 }
             }
         }
             //if there there is tasks to steal get here.
 
-            if ((!awake) & (whereToSteal != id)) { //if the tasks are not my own get in
-                int numOfTasksToSteal = (pool.myQues[whereToSteal].size() / 2) - 1;
+            if ((!awake && (whereToSteal != id))) {
+            int numOfTasksToSteal = (pool.myQues[whereToSteal].size() / 2) - 1;
                 int stealCount = 0;
-                while (stealCount < numOfTasksToSteal) {
+                while (stealCount < numOfTasksToSteal && pool.myQues[whereToSteal].size()>1) {
                     try {
-                        addTask(pool.myProcessors[whereToSteal].removeTask());
-                        stealCount++;
+                        Task tmp=pool.myProcessors[whereToSteal].removeTask();
+                        if(tmp!=null) {
+                            addTask(tmp);
+                            stealCount++;
+                        }
                     } catch (Exception e) {
+                        System.out.println("Stealing probleam" + e.getMessage());
                         break; //no more tasks to remove
                     }
                 }
@@ -98,13 +97,9 @@ public class Processor implements Runnable {
         }
     }
 
-    Task<?> removeTask() throws Exception{ //maybe return a null to avoid ecxeption??
+    Task<?> removeTask() throws Exception{
         return pool.myQues[id].pollFirst();
-        /*Task last= pool.myQues[id].pollFirst();
-        if(last!=null)
-            return last;
-        else
-            throw new Exception("no tasks to remove. exception at remove task!");*/
+
     }
 
     WorkStealingThreadPool getPool(){

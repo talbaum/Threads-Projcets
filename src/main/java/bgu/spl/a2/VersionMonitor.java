@@ -21,7 +21,8 @@ import java.util.concurrent.locks.Lock;
 public class VersionMonitor {
     //private int version=0;
     static AtomicInteger foo;
-    //private final Object lock = new Object();
+
+
     VersionMonitor() {
         foo = new AtomicInteger(1);
     }
@@ -40,8 +41,8 @@ public class VersionMonitor {
     }
 
     public void await(int myversion) throws InterruptedException {
-            while (this.foo.get() == myversion) {
-                synchronized (foo) {
+        synchronized (foo) {
+        while (this.foo.get() == myversion) {
                 foo.wait();
             }
         }

@@ -1,5 +1,6 @@
 package bgu.spl.a2;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * represents a work stealing thread pool - to understand what this class does
@@ -34,6 +35,7 @@ public class WorkStealingThreadPool {
         myThreads = new Thread[nthreads];
         myQues = new LinkedBlockingDeque[nthreads];
         monitor= new VersionMonitor();
+
         for (int i=0;i<myProcessors.length;i++){
             myProcessors[i]=new Processor(i,this);
             myQues[i]=new LinkedBlockingDeque<>();
@@ -49,7 +51,7 @@ public class WorkStealingThreadPool {
     public void submit(Task<?> task) {
         int randProcess = (int)(Math.random()*(myProcessors.length-1));
         myProcessors[randProcess].addTask(task);
-        monitor.inc();
+        //monitor.inc();
     }
 
     /**
@@ -67,17 +69,24 @@ public class WorkStealingThreadPool {
     public void shutdown() throws InterruptedException {
         //TODO: replace method body with real implementation
         toShutDown = true;
+
         for (int i = 0; i < myThreads.length; i++) {
             myThreads[i].interrupt();
         }
-        monitor.inc();
+/*
         for (int i = 0; i < myThreads.length; i++) {
-            if(myThreads[i].isAlive()){
+            if(myThreads[i].isInterrupted())
+                myThreads[i].join();
+        }*/
+        monitor.inc();
+
+   /*   for (int i = 0; i < myThreads.length; i++) {
+            if(myThreads[i].isInterrupted()){
                 System.out.println("before join for thread " + i);
                 myThreads[i].join();
                 System.out.println("after join for thread " + i);
              }
-        }
+            }*/
     }
 
     /**

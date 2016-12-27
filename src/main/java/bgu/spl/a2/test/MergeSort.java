@@ -72,34 +72,38 @@ public class MergeSort extends Task<int[]> {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        long tStart = System.currentTimeMillis();
-        WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
-        int n =10000; //you may check on different number of elements if you like
-         int[] array = new Random().ints(n).toArray();
-        //int[] array = new int[n];
-        //for (int i=0;i<n;i++)
-        //    array[i]=i;
+            for(int p=0;p<100;p++){
+            long tStart = System.currentTimeMillis();
+            WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
+            int n = 1000; //you may check on different number of elements if you like
+            int[] array = new Random().ints(n).toArray();
+            //int[] array = new int[n];
+            //for (int i=0;i<n;i++)
+            //    array[i]=i;
 
-        MergeSort task = new MergeSort(array);
+            MergeSort task = new MergeSort(array);
 
-        CountDownLatch l = new CountDownLatch(1);
-        pool.start();
-        pool.submit(task);
-        task.getResult().whenResolved(() -> {
-            //warning - a large print!! - you can remove this line if you wish
-            System.out.println(Arrays.toString(task.getResult().get()));
-            l.countDown();
-        });
+            CountDownLatch l = new CountDownLatch(1);
+            pool.start();
+            pool.submit(task);
+            task.getResult().whenResolved(() -> {
+                //warning - a large print!! - you can remove this line if you wish
+                //System.out.println(Arrays.toString(task.getResult().get()));
+                l.countDown();
+            });
 
-        l.await();
+            l.await();
 
-        long tEnd = System.currentTimeMillis();
-        long tDelta = tEnd - tStart;
-        double elapsedSeconds = tDelta / 1000.0;
+            long tEnd = System.currentTimeMillis();
+            long tDelta = tEnd - tStart;
+            double elapsedSeconds = tDelta / 1000.0;
 
-        System.out.println(elapsedSeconds+" seconds");
-        pool.shutdown();
-        System.out.println("great success");
+            System.out.println(elapsedSeconds + " seconds");
+            pool.shutdown();
+            System.out.println("great success " +p);
+        }
+        System.out.println("finished with " +Thread.activeCount() + " alive threads (should be 0)" );
+
     }
 
 }

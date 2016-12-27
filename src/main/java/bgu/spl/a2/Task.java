@@ -54,7 +54,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
                     while ((i > 0) & (!childTasks.isEmpty())) {
                         i--;
                         Task<?> tmp = childTasks.poll();
-                        if ((tmp != null) && (!tmp.getResult().isResolved())) {
+                        if ((tmp != null)){  //&& (!tmp.getResult().isResolved())) {  MAKE SURE ITS OK!
                             spawn(tmp);
                         }
                     }
@@ -62,7 +62,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
                 }
             } else {
                 try {
-                    for (Runnable callback : myTaskDeferred.doAfterResolve) {
+                    while(! myTaskDeferred.doAfterResolve.isEmpty()) {
                         Runnable tmp = myTaskDeferred.doAfterResolve.poll();
                         tmp.run();
                     }
@@ -140,8 +140,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param result - the task calculated result
      */
     protected  synchronized final void complete(R result) {
-        //myTaskDeferred.resolve(result);
-       Runnable callCompleteAgain = () -> this.complete(result);
+        myTaskDeferred.resolve(result);
+       /*Runnable callCompleteAgain = () -> this.complete(result);
 
         Iterator<Task<?>> I = childTasks.iterator();
 
@@ -159,6 +159,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
             if ((!myTaskDeferred.isResolved())&((!childTasks.isEmpty())))
             childTasks.peek().myTaskDeferred.whenResolved(callCompleteAgain);
         }
+    */
     }
 
     /**
