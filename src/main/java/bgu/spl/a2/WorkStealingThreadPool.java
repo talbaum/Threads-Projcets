@@ -76,7 +76,7 @@ public class WorkStealingThreadPool {
                 System.out.println("before join for thread " + i);
                 myThreads[i].join();
                 System.out.println("after join for thread " + i);
-       }
+             }
         }
     }
 

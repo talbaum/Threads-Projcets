@@ -19,7 +19,7 @@ public class SumMatrix extends Task<int[]>{
             spawn(newTask);
             tasks.add(newTask);
         }
-        System.out.println("almost GOT INTO LAMBDA");
+       // System.out.println("almost GOT INTO LAMBDA");
 
         whenResolved(tasks,()->{
             System.out.println("GOT INTO LAMBDA");
