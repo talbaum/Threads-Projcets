@@ -7,13 +7,12 @@ public class TestMatrix {
     public static void main(String[] args) throws InterruptedException {
         //for(int i=0;i<1000;i++){
         WorkStealingThreadPool pool = new WorkStealingThreadPool(10);
-        int[][] array = {{1,1,23,1},{1,1,1,100},{1,1,1,1},{1,3,1,1}};
+        int[][] array = {{1,1,23,1},{1,1,2,100},{1,1,1,1},{1,3,1,1}};
 
         SumMatrix myTask = new SumMatrix(array);
         pool.submit(myTask);
         pool.start();
         Thread.sleep(3000);
-       // System.out.println(myTask.getResult().get());
         pool.shutdown(); //stopping all the threads
         //	}
 

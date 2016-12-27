@@ -15,7 +15,7 @@ public class WorkStealingThreadPool {
     Processor [] myProcessors;
     LinkedBlockingDeque<Task<?>>[] myQues;
     Thread[] myThreads;
-    VersionMonitor monitor= new VersionMonitor();
+    VersionMonitor monitor;
     boolean toShutDown=false;
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
@@ -33,6 +33,7 @@ public class WorkStealingThreadPool {
         myProcessors=new Processor[nthreads];
         myThreads = new Thread[nthreads];
         myQues = new LinkedBlockingDeque[nthreads];
+        monitor= new VersionMonitor();
         for (int i=0;i<myProcessors.length;i++){
             myProcessors[i]=new Processor(i,this);
             myQues[i]=new LinkedBlockingDeque<>();
@@ -48,7 +49,7 @@ public class WorkStealingThreadPool {
     public void submit(Task<?> task) {
         int randProcess = (int)(Math.random()*(myProcessors.length-1));
         myProcessors[randProcess].addTask(task);
-       // monitor.inc();
+        monitor.inc();
     }
 
     /**
@@ -68,10 +69,17 @@ public class WorkStealingThreadPool {
         toShutDown = true;
         for (int i = 0; i < myThreads.length; i++) {
             myThreads[i].interrupt();
-            myThreads[i].join();
         }
+        monitor.inc();
+        for (int i = 0; i < myThreads.length; i++) {
+            if(myThreads[i].isAlive()){
+                System.out.println("before join for thread " + i);
+                myThreads[i].join();
+                System.out.println("after join for thread " + i);
+       }
+        }
+    }
 
-        }
     /**
      * start the threads belongs to this thread pool
      */
@@ -79,7 +87,6 @@ public class WorkStealingThreadPool {
         for (int i=0;i<myProcessors.length;i++){
             myThreads[i].start();
         }
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
-
+    
 }
