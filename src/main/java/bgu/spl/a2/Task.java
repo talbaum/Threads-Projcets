@@ -44,38 +44,35 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     /*package*/ final synchronized void handle(Processor handler) {
         myProcessor = handler;
-        if (!hasStarted){
+        if (!hasStarted) {
             start();
-            hasStarted=true;
-        }
-
-        if (!myTaskDeferred.isResolved()) {
-            int i = childTasks.size();
-            if (i > 0) {
-                while ((i > 0) & (!childTasks.isEmpty())) {
-                    i--;
-                    Task<?> tmp = childTasks.poll();
-                    if ((tmp != null) && (!tmp.getResult().isResolved())) {
-                        spawn(tmp);
+            hasStarted = true;
+        } else {
+            if (!myTaskDeferred.isResolved()) {
+                int i = childTasks.size();
+                if (i > 0) {
+                    while ((i > 0) & (!childTasks.isEmpty())) {
+                        i--;
+                        Task<?> tmp = childTasks.poll();
+                        if ((tmp != null) && (!tmp.getResult().isResolved())) {
+                            spawn(tmp);
+                        }
                     }
+                    myProcessor.addTask(this);
                 }
-                myProcessor.addTask(this);
-            }
-        }
-        else{
-           try {
+            } else {
+                try {
                     for (Runnable callback : myTaskDeferred.doAfterResolve) {
                         Runnable tmp = myTaskDeferred.doAfterResolve.poll();
                         tmp.run();
+                    }
+                } catch (Exception e) {
+                    System.out.println("running all the callbacks null exception (in task class) ");
                 }
             }
-            catch (Exception e){
-                System.out.println("running all the callbacks null exception (in task class) ");
-            }
+
         }
-
     }
-
     /**
      * This method schedules a new task (a child of the current task) to the
      * same processor which currently handles this task.
@@ -100,8 +97,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param callback the callback to execute once all the results are resolved
      */
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
-    boolean foundOne=false;
-        Iterator<? extends Task<?>> IT = tasks.iterator();
+        boolean foundOne = false;
+        Object[] taskArr = tasks.toArray();
+        for (int i = 0; i < taskArr.length; i++) {
+            Task<?> tmp = (Task<?>) taskArr[i];
+            if (tmp.getResult().isResolved()) {
+                taskArr[i] = 0;
+            } else if (!foundOne) {
+                Runnable callback2 = () -> whenResolved(tasks, callback);
+                tmp.myTaskDeferred.whenResolved(callback2);
+                foundOne = true;
+            }
+        }
+        if (!foundOne) {
+            callback.run();
+        }
+    }
+     /*   Iterator<? extends Task<?>> IT = tasks.iterator();
         while ((!foundOne)&(IT.hasNext())){
             Task<?> tmp = IT.next();
             if (tmp.getResult().isResolved()){
@@ -116,7 +128,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
         if (!foundOne){
             callback.run();
         }
-    }
+    }*/
 
 
 

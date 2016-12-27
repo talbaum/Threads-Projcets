@@ -11,7 +11,7 @@ public class SumMatrix extends Task<int[]>{
     }
 
     protected void start(){
-        int sum=0;
+
         List<Task<Integer>> tasks = new ArrayList<>();
         int rows = array.length;
         for(int i=0;i<rows;i++){
@@ -23,13 +23,18 @@ public class SumMatrix extends Task<int[]>{
 
         whenResolved(tasks,()->{
             System.out.println("GOT INTO LAMBDA");
+                         int sum=0;
                     int[] res = new int[rows];
                     for(int j=0; j< rows; j++){
                         res[j] = tasks.get(j).getResult().get();
-                        System.out.println(res[j]);
-
+                      // System.out.println(res[j]);
                     }
+
                     complete(res);
+                    for(int i=0;i<myTaskDeferred.get().length;i++){
+                        sum+=myTaskDeferred.get()[i];
+                    }
+            System.out.println("The sum of the matrix is "+sum);
                 }
         );
     }

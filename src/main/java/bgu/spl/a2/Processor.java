@@ -55,6 +55,7 @@ public class Processor implements Runnable {
             }
         }
     }
+
     void steal() {
         int whereToSteal = (id + 1) % (pool.myProcessors.length);
         int startVersion = pool.monitor.getVersion();
