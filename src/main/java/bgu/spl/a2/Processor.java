@@ -17,6 +17,7 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
+    int startVersion;
     /**
      * constructor for this class
      *
@@ -42,6 +43,7 @@ public class Processor implements Runnable {
     public void run() {
         while (!pool.toShutDown) {
             if (pool.myQues[id].isEmpty()) {
+                startVersion = pool.monitor.getVersion();
                 steal();
             } else {
                 while (!pool.myQues[id].isEmpty()) {
@@ -56,7 +58,7 @@ public class Processor implements Runnable {
 
     void steal() {
         int whereToSteal = (id + 1) % (pool.myProcessors.length);
-        int startVersion = pool.monitor.getVersion();
+        //int startVersion = pool.monitor.getVersion();
         boolean awake = false;
 
         while (!awake && (pool.myQues[whereToSteal].size() <= 1)) {
@@ -67,7 +69,7 @@ public class Processor implements Runnable {
                     pool.monitor.await(startVersion);
                     awake = true;
                 } catch (Exception e) {
-                    System.out.println(e.getMessage() + " STEALING PROBLEM");
+                 //   System.out.println(e.getMessage() + " STEALING PROBLEM");
                 }
             }
         }

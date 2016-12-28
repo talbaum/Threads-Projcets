@@ -28,7 +28,7 @@ public class Deferred<T> {
      * @throws IllegalStateException in the case where this method is called and
      *                               this object is not yet resolved
      */
-    public T get() throws IllegalStateException {
+    public synchronized T get() throws IllegalStateException {
         if (myObject != null)
             return myObject;
         else
@@ -73,7 +73,7 @@ public class Deferred<T> {
                         }
                     }
                     catch (Exception e){
-                        System.out.println("doAfterResolve exception (in deffered class)");
+                        System.out.println("doAfterResolve exception (in deffered class)" + e.getMessage());
                     }
                 }
             }
@@ -92,7 +92,7 @@ public class Deferred<T> {
      * @param callback the callback to be called when the deferred object is
      *                 resolved
      */
-    public void whenResolved(Runnable callback) {
+    public synchronized void whenResolved(Runnable callback) {
         if (callback == null) {
             throw new IllegalStateException("the callback sent to deferred is null!");
         }

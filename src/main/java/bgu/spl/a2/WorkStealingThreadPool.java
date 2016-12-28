@@ -69,25 +69,19 @@ public class WorkStealingThreadPool {
     public void shutdown() throws InterruptedException {
         //TODO: replace method body with real implementation
         toShutDown = true;
-
         for (int i = 0; i < myThreads.length; i++) {
-            myThreads[i].interrupt();
+                myThreads[i].interrupt();
         }
-/*
-        for (int i = 0; i < myThreads.length; i++) {
-            if(myThreads[i].isInterrupted())
-                myThreads[i].join();
-        }*/
         monitor.inc();
 
-   /*   for (int i = 0; i < myThreads.length; i++) {
-            if(myThreads[i].isInterrupted()){
-                System.out.println("before join for thread " + i);
-                myThreads[i].join();
-                System.out.println("after join for thread " + i);
-             }
-            }*/
-    }
+  /*   for (int i = 0; i < myThreads.length; i++) {
+    //      if (myThreads[i].isInterrupted()) {
+             // System.out.println("before join for thread " + i);
+            //  myThreads[i].join();
+              //System.out.println("after join for thread " + i);
+          }*/
+      }
+
 
     /**
      * start the threads belongs to this thread pool
