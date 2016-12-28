@@ -11,7 +11,7 @@ class NextPrimeHammer implements Tool{
 	/**
 	* @return tool name as string
 	*/
-    public String getType(){
+    public String getType() {
     	return "Next Prime Hammer";
 	}
 	/** Tool use method
@@ -19,14 +19,14 @@ class NextPrimeHammer implements Tool{
 	* @return a long describing the result of tool use on Product package
 	*/
     public long useOn(Product p){
-    	boolean FoundPrime=false;
+    	boolean foundPrime=false;
     	long num=p.getStartId();
-    	while (!FoundPrime){
-			FoundPrime=true;
+    	while (!foundPrime){
+			foundPrime=true;
 			num++;
     		for (int i=2;i<=num/2;i++){
     			if (num%i==0){
-					FoundPrime=false;
+					foundPrime=false;
 				}
 			}
 		}
