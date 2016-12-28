@@ -18,6 +18,7 @@ public class Processor implements Runnable {
     private final WorkStealingThreadPool pool;
     private final int id;
     int startVersion;
+
     /**
      * constructor for this class
      *
@@ -61,7 +62,7 @@ public class Processor implements Runnable {
         //int startVersion = pool.monitor.getVersion();
         boolean awake = false;
 
-        while (!awake && (pool.myQues[whereToSteal].size() <= 1)) {
+        while (!pool.toShutDown & !awake && (pool.myQues[whereToSteal].size() <= 1)) {
             whereToSteal = (whereToSteal + 1) % pool.myProcessors.length;
 
             if (whereToSteal == id) { //why we need the try and catch?? need to test the await function again.
@@ -78,7 +79,7 @@ public class Processor implements Runnable {
             if ((!awake && (whereToSteal != id))) {
             int numOfTasksToSteal = (pool.myQues[whereToSteal].size() / 2) - 1;
                 int stealCount = 0;
-                while (stealCount < numOfTasksToSteal && pool.myQues[whereToSteal].size()>1) {
+                while (!pool.toShutDown & stealCount < numOfTasksToSteal && pool.myQues[whereToSteal].size()>1) {
                     try {
                         Task tmp=pool.myProcessors[whereToSteal].removeTask();
                         if(tmp!=null) {
@@ -101,7 +102,6 @@ public class Processor implements Runnable {
 
     Task<?> removeTask() throws Exception{
         return pool.myQues[id].pollFirst();
-
     }
 
     WorkStealingThreadPool getPool(){

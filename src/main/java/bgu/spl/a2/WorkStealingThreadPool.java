@@ -72,7 +72,7 @@ public class WorkStealingThreadPool {
         for (int i = 0; i < myThreads.length; i++) {
                 myThreads[i].interrupt();
         }
-        monitor.inc();
+        //monitor.inc();
 
   /*   for (int i = 0; i < myThreads.length; i++) {
     //      if (myThreads[i].isInterrupted()) {
