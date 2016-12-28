@@ -6,12 +6,17 @@ import java.util.List;
  * A class that represents a product produced during the simulation.
  */
 public class Product {
+	private long startId;
+	private String Name;
 	/**
 	* Constructor 
 	* @param startId - Product start id
 	* @param name - Product name
 	*/
-    public Product(long startId, String name);
+    public Product(long startId, String name){
+    	this.Name=name;
+    	this.startId=startId;
+	}
 
 	/**
 	* @return The product name as a string
