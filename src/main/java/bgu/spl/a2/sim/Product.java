@@ -7,14 +7,14 @@ import java.util.List;
  */
 public class Product {
 	private long startId;
-	private String Name;
+	private String name;
 	/**
 	* Constructor 
 	* @param startId - Product start id
 	* @param name - Product name
 	*/
     public Product(long startId, String name){
-    	this.Name=name;
+    	this.name=name;
     	this.startId=startId;
 	}
 
