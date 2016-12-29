@@ -21,10 +21,12 @@ class NextPrimeHammer implements Tool{
     public long useOn(Product p){
     	boolean foundPrime=false;
     	long num=p.getStartId();
+        long sq;
     	while (!foundPrime){
 			foundPrime=true;
 			num++;
-    		for (int i=2;i<=num/2;i++){
+            sq = (long) Math.sqrt(num);
+    		for (int i=2;i<=sq;i++){
     			if (num%i==0){
 					foundPrime=false;
 				}

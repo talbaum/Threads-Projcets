@@ -18,8 +18,7 @@ class RandomSumPliers implements Tool{
 	*/
     public long useOn(Product p){
     	long sum=0;
-		Random Num = new Random();
-		Num.setSeed(p.getStartId());
+		Random Num = new Random(p.getStartId());
 		for (int i=0;i<p.getStartId()%10000;i++)
 			sum=sum+Num.nextLong();
 
