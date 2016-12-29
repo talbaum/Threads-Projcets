@@ -39,4 +39,5 @@ public class GcdScrewDriver implements Tool {
         }
         return reverse;
     }
+
 }
