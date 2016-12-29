@@ -1,12 +1,13 @@
 package bgu.spl.a2.sim;
 
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
+import bgu.spl.a2.sim.tools.GcdScrewDriver;
+import bgu.spl.a2.sim.tools.NextPrimeHammer;
+import bgu.spl.a2.sim.tools.RandomSumPliers;
 import bgu.spl.a2.sim.tools.Tool;
 import bgu.spl.a2.Deferred;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Vector;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,25 +21,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  */
 public class Warehouse {
-
-	ConcurrentLinkedQueue <Deferred<Tool>> drivers;
-	ConcurrentLinkedQueue <Deferred<Tool>> pliers;
-	ConcurrentLinkedQueue<Deferred<Tool>> hammers;
-	AtomicInteger driversNum;
-	AtomicInteger hammersNum;
-	AtomicInteger pliersNum;
+	AtomicInteger driversCount;
+	AtomicInteger hammersCount;
+	AtomicInteger pliersCount;
+	ConcurrentLinkedQueue <Deferred<Tool>> waitingDrivers;
+	ConcurrentLinkedQueue <Deferred<Tool>> waitingPliers;
+	ConcurrentLinkedQueue<Deferred<Tool>> waitingHammers;
 	ConcurrentLinkedQueue<ManufactoringPlan> plans;
 
 	/**
 	 * Constructor
 	 */
 	public Warehouse() {
-		drivers= new ConcurrentLinkedQueue<>();
-		pliers= new ConcurrentLinkedQueue<>();
-		hammers=new ConcurrentLinkedQueue<>();
-		driversNum=new AtomicInteger(0);
-		hammersNum=new AtomicInteger(0);
-		pliersNum=new AtomicInteger(0);
+		driversCount=new AtomicInteger(0);
+		hammersCount=new AtomicInteger(0);
+		pliersCount=new AtomicInteger(0);
+		waitingDrivers= new ConcurrentLinkedQueue<>();
+		waitingPliers= new ConcurrentLinkedQueue<>();
+		waitingHammers=new ConcurrentLinkedQueue<>();
 		plans= new ConcurrentLinkedQueue<>();
 	}
 
@@ -49,28 +49,47 @@ public class Warehouse {
 	 * @param type - string describing the required tool
 	 * @return a deferred promise for the  requested tool
 	 */
-	public Deferred<Tool> acquireTool(String type){
-        switch (type) {
-            case "gs-driver":
-                if(driversNum.intValue()>0) {
-                    driversNum.set(driversNum.intValue() - 1);
-                    return drivers.poll();
-                }
-                else {
+	public Deferred<Tool> acquireTool(String type) {
+		Deferred<Tool> ans = new Deferred<>();
+		switch (type) {
+			case "gs-driver":
+				if (driversCount.intValue() > 0) {
+					driversCount.set(driversCount.intValue() - 1);
+					ans.resolve(new GcdScrewDriver());
+					return ans;
+				}
+				else {
+				//need to add Callback..whenresolved at Man task maybe
+						waitingDrivers.add(ans);
+				}
+				break;
 
-                }
-                break;
+			case "np-hammer":
+				if (hammersCount.intValue() > 0) {
+					hammersCount.set(hammersCount.intValue() - 1);
+					ans.resolve(new NextPrimeHammer());
+					return ans;
+				}
+				else {
 
-            case "np-hammer":
-                hammersNum.set(hammersNum.intValue()-1);
-                break;
+					waitingHammers.add(ans);
+				}
+				break;
 
-            case "rs-pl-iers":
-                pliersNum.set(pliersNum.intValue()-1);
-                break;
-        }
+			case "rs-pliers":
+				if (pliersCount.intValue() > 0) {
+					pliersCount.set(pliersCount.intValue() - 1);
+					ans.resolve(new RandomSumPliers());
+					return ans;
+				}
+				else {
 
-    }
+					waitingPliers.add(ans);
+				}
+				break;
+		}
+		return null;
+	}
 
 	/**
 	 * Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
@@ -80,19 +99,27 @@ public class Warehouse {
 	public void releaseTool(Tool tool){
 		switch (tool.getType()) {
 			case "gs-driver":
-				driversNum.set(driversNum.intValue()+1);
+				driversCount.set(driversCount.intValue()+1);
+					if(!waitingDrivers.isEmpty()){
+					waitingDrivers.poll().resolve(new GcdScrewDriver());
+					}
 				break;
 
 			case "np-hammer":
-				hammersNum.set(hammersNum.intValue()+1);
+				hammersCount.set(hammersCount.intValue()+1);
+				if(!waitingHammers.isEmpty()){
+					waitingHammers.poll().resolve(new NextPrimeHammer());
+				}
 				break;
 
 			case "rs-pliers":
-				pliersNum.set(pliersNum.intValue()+1);
+				pliersCount.set(pliersCount.intValue()+1);
+				if(!waitingPliers.isEmpty()){
+					waitingPliers.poll().resolve(new RandomSumPliers());
+				}
 				break;
 		}
 	}
-
 
 	/**
 	 * Getter for ManufactoringPlans
@@ -126,20 +153,15 @@ public class Warehouse {
 	public void addTool(Tool tool, int qty) {
     	switch (tool.getType()) {
 			case "gs-driver":
-				driversNum.set(qty);
-				for (int i=0;i<qty;i++)
-                {
-
-                }
-
+				driversCount.set(driversCount.intValue()+qty);
 				break;
 
 			case "np-hammer":
-					hammersNum.set(qty);
+					hammersCount.set(hammersCount.intValue()+qty);
 				break;
 
 			case "rs-pliers":
-					pliersNum.set(qty);
+					pliersCount.set(pliersCount.intValue()+qty);
 				break;
 		}
 	}

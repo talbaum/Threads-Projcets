@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * an interface to be implemented by all tools
  */
-class RandomSumPliers implements Tool{
+ public class RandomSumPliers implements Tool{
 	/**
 	* @return tool name as string
 	*/

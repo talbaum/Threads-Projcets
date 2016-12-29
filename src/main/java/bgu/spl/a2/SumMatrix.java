@@ -22,12 +22,10 @@ public class SumMatrix extends Task<int[]>{
        // System.out.println("almost GOT INTO LAMBDA");
 
         whenResolved(tasks,()->{
-            System.out.println("GOT INTO LAMBDA");
-                         int sum=0;
+                    int sum=0;
                     int[] res = new int[rows];
                     for(int j=0; j< rows; j++){
                         res[j] = tasks.get(j).getResult().get();
-                      // System.out.println(res[j]);
                     }
 
                     complete(res);
