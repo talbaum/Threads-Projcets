@@ -1,5 +1,4 @@
  package bgu.spl.a2;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
  /**

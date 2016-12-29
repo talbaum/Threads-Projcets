@@ -1,11 +1,11 @@
 package bgu.spl.a2;
-import static org.hamcrest.Matcher.*;
+//import static org.hamcrest.Matcher.*;
 
-import javafx.geometry.Point2D;
+//import javafx.geometry.Point2D;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Rule;
+//import org.junit.Rule;
 
 
 import static org.junit.Assert.*;

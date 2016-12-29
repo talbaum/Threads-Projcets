@@ -12,7 +12,7 @@ class NextPrimeHammer implements Tool{
 	* @return tool name as string
 	*/
     public String getType() {
-    	return "Next Prime Hammer";
+    	return "np-hammer";
 	}
 	/** Tool use method
 	* @param p - Product to use tool on

@@ -10,7 +10,7 @@ class RandomSumPliers implements Tool{
 	* @return tool name as string
 	*/
     public String getType(){
-    	return "RandomSumPliers";
+    	return "rs-pliers";
 	}
 	/** Tool use method
 	* @param p - Product to use tool on
