@@ -102,6 +102,7 @@ public class Warehouse {
 				driversCount.set(driversCount.intValue()+1);
 					if(!waitingDrivers.isEmpty()){
 					waitingDrivers.poll().resolve(new GcdScrewDriver());
+						driversCount.set(driversCount.intValue()-1);
 					}
 				break;
 
@@ -109,6 +110,7 @@ public class Warehouse {
 				hammersCount.set(hammersCount.intValue()+1);
 				if(!waitingHammers.isEmpty()){
 					waitingHammers.poll().resolve(new NextPrimeHammer());
+					hammersCount.set(hammersCount.intValue()-1);
 				}
 				break;
 
@@ -116,6 +118,7 @@ public class Warehouse {
 				pliersCount.set(pliersCount.intValue()+1);
 				if(!waitingPliers.isEmpty()){
 					waitingPliers.poll().resolve(new RandomSumPliers());
+					pliersCount.set(pliersCount.intValue()-1);
 				}
 				break;
 		}
