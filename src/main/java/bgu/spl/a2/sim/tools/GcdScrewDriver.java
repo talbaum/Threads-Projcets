@@ -4,7 +4,7 @@ import bgu.spl.a2.sim.Product;
 import java.math.BigInteger;
 
 /**
- * Created by באום on 28/12/2016.
+ * Created by baum on 28/12/2016.
  */
 public class GcdScrewDriver implements Tool {
 
@@ -15,18 +15,28 @@ public class GcdScrewDriver implements Tool {
 
     @Override
     public long useOn(Product p) {
-        long myId=p.getStartId();
-        long reversedId=0;
+        long value = 0;
+        for (Product part : p.getParts()) {
+            value += Math.abs(func(part.getStartId()));
 
-        while (myId != 0) {
-            reversedId = reversedId * 10 + myId % 10;
-            myId = myId / 10;
         }
+        return value;
+    }
 
-        BigInteger b1 = BigInteger.valueOf(p.getStartId());
-        BigInteger b2 = BigInteger.valueOf(reversedId);
-        BigInteger gcd = b1.gcd(b2);
-        return gcd.intValue();
+    public long func(long id) {
+        BigInteger b1 = BigInteger.valueOf(id);
+        BigInteger b2 = BigInteger.valueOf(reverse(id));
+        long value = (b1.gcd(b2)).longValue();
+        return value;
+    }
 
+    public long reverse(long n) {
+        long reverse = 0;
+        while (n != 0) {
+            reverse = reverse * 10;
+            reverse = reverse + n % 10;
+            n = n / 10;
+        }
+        return reverse;
     }
 }
