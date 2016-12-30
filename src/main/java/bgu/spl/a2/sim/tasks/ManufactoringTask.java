@@ -1,9 +1,14 @@
 package bgu.spl.a2.sim.tasks;
 
+import bgu.spl.a2.Deferred;
 import bgu.spl.a2.Task;
 import bgu.spl.a2.sim.Product;
 import bgu.spl.a2.sim.Warehouse;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
+import bgu.spl.a2.sim.tools.Tool;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by baum on 29/12/2016.
@@ -13,20 +18,76 @@ public class ManufactoringTask extends Task <Product>{
     ManufactoringPlan plan;
     long startId;
     Product myProd;
+    ArrayList<ManufactoringTask> miniTasks;
+    ArrayList<Deferred<Tool>> toolList;
 
 
-    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId, Product myProd){
+    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId){
         this.warehouse=warehouse;
         this.plan=plan;
         this.startId=startId;
-        this.myProd=myProd;
+        myProd = new Product(startId,plan.getProductName());
+        miniTasks=new ArrayList<ManufactoringTask>();
+        toolList=new ArrayList<Deferred<Tool>>();
     }
 
-    protected void start(){
-        if (myProd.getParts().size()>0){
-            for( p : myProd.getParts())
+    protected void start() {
+        if (plan.getParts().length > 0) {
+            ManufactoringTask tmpTask;
+            //create manifuctared tasks for each part in the plan and then spawn them
+            for (String part : plan.getParts()) {
+                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), startId + 1);
+                miniTasks.add(tmpTask);
+            }
+            for (ManufactoringTask task : miniTasks) {
+                spawn(task);
+            }
+
+            //after all the mini tasks finished and got values at their deffered ,do this:
+            whenResolved(miniTasks, () -> {
+                for (ManufactoringTask task : miniTasks) {
+                    myProd.addPart(task.getResult().get()); //task.getResult().get() = the value in deffered
+                }
+
+                if (plan.getTools().length > 0)
+                    toolsCheck();
+                else { //means no more tools , and all mini tasks were resolved
+                    long sumOfAll = 0;
+                    for (ManufactoringTask task : miniTasks)
+                        sumOfAll += task.getResult().get().getFinalId();
+
+                    myProd.setFinalId(sumOfAll);
+                    complete(myProd);
+                }
+            }); //end of lambda
+        }
+        else { // the first if. means num of parts is 0. (plan.getParts().length == 0)
+            if (plan.getTools().length > 0)
+                toolsCheck();
+            else
+                complete(myProd);
+        }
+    }
+
+    private void toolsCheck(){
+            Deferred<Tool> requestedTool;
+            for(String toolName: plan.getTools()){
+                requestedTool=warehouse.acquireTool(toolName);
+                toolList.add(requestedTool);
+
+                //after we finished using the tool, do that:
+                requestedTool.whenResolved(()->{
+                    long idAfterUse= requestedTool.get().useOn(myProd);
+                    myProd.setFinalId(idAfterUse);
+                    warehouse.releaseTool(requestedTool.get());
+
+                    //if this was the last tool needed , complete and finish
+                    AtomicInteger numOfTools=new AtomicInteger(toolList.size());
+                    if(numOfTools.decrementAndGet()==0)
+                        complete(myProd);
+                }); //end of lambda
+            } //end of for
+        }//end of toolCheck
+
         }
 
-
-    }
-}
