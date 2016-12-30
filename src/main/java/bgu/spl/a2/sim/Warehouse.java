@@ -58,7 +58,9 @@ public class Warehouse {
 					ans.resolve(new GcdScrewDriver());
 				}
 				else {
-						waitingDrivers.add(ans);
+					Runnable callback=()->driversCount.decrementAndGet();
+					ans.whenResolved(callback);
+					waitingDrivers.add(ans);
 				}
 				return ans;
 
@@ -69,6 +71,8 @@ public class Warehouse {
 					ans.resolve(new NextPrimeHammer());
 				}
 				else {
+					Runnable callback=()->hammersCount.decrementAndGet();
+					ans.whenResolved(callback);
 					waitingHammers.add(ans);
 				}
 				return ans;
@@ -79,6 +83,8 @@ public class Warehouse {
 					ans.resolve(new RandomSumPliers());
 				}
 				else {
+					Runnable callback=()->pliersCount.decrementAndGet();
+					ans.whenResolved(callback);
 					waitingPliers.add(ans);
 				}
 				return ans;
@@ -97,7 +103,7 @@ public class Warehouse {
 				driversCount.incrementAndGet();
 					if(!waitingDrivers.isEmpty())
 						waitingDrivers.poll().resolve(tool);
-				//driversCount.decrementAndGet();
+
 				break;
 
 			case "np-hammer":
