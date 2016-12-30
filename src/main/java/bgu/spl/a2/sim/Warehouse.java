@@ -118,7 +118,6 @@ public class Warehouse {
 				pliersCount.incrementAndGet();
 				if(!waitingPliers.isEmpty()){
 					waitingPliers.poll().resolve(new RandomSumPliers());
-					//pliersCount.decrementAndGet();
 				}
 				break;
 		}
