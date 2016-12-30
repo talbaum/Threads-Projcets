@@ -73,7 +73,7 @@ public class MergeSort extends Task<int[]> {
     }
 
     public static void main(String[] args) throws InterruptedException {
-            for(int p=0;p<30;p++){
+            for(int p=0;p<300001;p++){
             long tStart = System.currentTimeMillis();
             WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
             int n = 10000; //you may check on different number of elements if you like
@@ -103,7 +103,7 @@ public class MergeSort extends Task<int[]> {
 
             System.out.println("great success " +p);
         }
-        System.out.println("finished with " +Thread.activeCount() + " alive threads (should be 0)" );
+        System.out.println("finished");
 
     }
 

@@ -50,43 +50,38 @@ public class Warehouse {
 	 * @return a deferred promise for the  requested tool
 	 */
 	public Deferred<Tool> acquireTool(String type) {
-		Deferred<Tool> ans = new Deferred<>();
+		Deferred<Tool> ans = new Deferred<Tool>();
 		switch (type) {
 			case "gs-driver":
 				if (driversCount.intValue() > 0) {
-					driversCount.set(driversCount.intValue() - 1);
+					driversCount.decrementAndGet();
 					ans.resolve(new GcdScrewDriver());
-					return ans;
 				}
 				else {
-					//need to add Callback..whenresolved at Man task maybe
 						waitingDrivers.add(ans);
 				}
-				break;
+				return ans;
+
 
 			case "np-hammer":
 				if (hammersCount.intValue() > 0) {
-					hammersCount.set(hammersCount.intValue() - 1);
+					hammersCount.decrementAndGet();
 					ans.resolve(new NextPrimeHammer());
-					return ans;
 				}
 				else {
-
 					waitingHammers.add(ans);
 				}
-				break;
+				return ans;
 
 			case "rs-pliers":
 				if (pliersCount.intValue() > 0) {
-					pliersCount.set(pliersCount.intValue() - 1);
+					pliersCount.decrementAndGet();
 					ans.resolve(new RandomSumPliers());
-					return ans;
 				}
 				else {
-
 					waitingPliers.add(ans);
 				}
-				break;
+				return ans;
 		}
 		return null;
 	}
@@ -96,29 +91,28 @@ public class Warehouse {
 	 *
 	 * @param tool - The tool to be returned
 	 */
-	public void releaseTool(Tool tool){
+	public synchronized void releaseTool(Tool tool){
 		switch (tool.getType()) {
 			case "gs-driver":
-				driversCount.set(driversCount.intValue()+1);
-					if(!waitingDrivers.isEmpty()){
-					waitingDrivers.poll().resolve(new GcdScrewDriver());
-						driversCount.set(driversCount.intValue()-1);
-					}
+				driversCount.incrementAndGet();
+					if(!waitingDrivers.isEmpty())
+						waitingDrivers.poll().resolve(tool);
+				//driversCount.decrementAndGet();
 				break;
 
 			case "np-hammer":
-				hammersCount.set(hammersCount.intValue()+1);
+				hammersCount.incrementAndGet();
 				if(!waitingHammers.isEmpty()){
 					waitingHammers.poll().resolve(new NextPrimeHammer());
-					hammersCount.set(hammersCount.intValue()-1);
+					//hammersCount.decrementAndGet();
 				}
 				break;
 
 			case "rs-pliers":
-				pliersCount.set(pliersCount.intValue()+1);
+				pliersCount.incrementAndGet();
 				if(!waitingPliers.isEmpty()){
 					waitingPliers.poll().resolve(new RandomSumPliers());
-					pliersCount.set(pliersCount.intValue()-1);
+					//pliersCount.decrementAndGet();
 				}
 				break;
 		}
