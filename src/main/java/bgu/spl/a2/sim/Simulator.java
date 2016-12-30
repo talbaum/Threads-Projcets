@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import bgu.spl.a2.sim.tasks.ManufactoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
@@ -107,12 +108,25 @@ public class Simulator {
 
 			JSONArray Waves = (JSONArray)jsonObject.get("waves");
 			i = Waves.iterator();
-			while (i.hasNext()){
+			for (int d=0;d<Waves.size();d++){
+				JSONArray Products = (JSONArray)Waves.get(d);
+				Iterator g = Products.iterator();
 
+				while (g.hasNext()){
+					JSONObject tmpP = (JSONObject)g.next();
+					Long qty = (long)tmpP.get("qty");
+					Integer count = Integer.valueOf(qty.intValue());
+					String pPlanName = (String)tmpP.get("Product");
+
+					while (count>0){
+						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),(long)tmpP.get("startId"));
+						pool.submit(newTask);
+								count--;
+					}
+
+				}
 
 			}
-
-
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
