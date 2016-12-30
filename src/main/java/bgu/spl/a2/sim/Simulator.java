@@ -86,18 +86,18 @@ public class Simulator {
 
 				JSONArray toolsInProduct = (JSONArray)tmp.get("tools");
 				String[] tmpTools = new String[toolsInProduct.size()];
-				Iterator k = toolsInProduct.iterator();
-				int index=0;
-				while (k.hasNext()){
-				tmpTools[index]=(String)k.next();
+
+				for (int index1=0;index1<toolsInProduct.size();index1++){
+					tmpTools[index1]=(String)toolsInProduct.get(index1);
 				}
+
+
 				JSONArray partsInProduct = (JSONArray)tmp.get("parts");
 				String[] tmpParts = new String[partsInProduct.size()];
-				k = partsInProduct.iterator();
-				index=0;
-				while (k.hasNext()){
-					tmpParts[index]=(String)k.next();
+				for (int index1=0;index1<partsInProduct.size();index1++){
+					tmpParts[index1]=(String)partsInProduct.get(index1);
 				}
+
 
 				//create new plan here
 				ManufactoringPlan tmpPlan = new ManufactoringPlan(name,tmpParts,tmpTools);
@@ -110,20 +110,18 @@ public class Simulator {
 			i = Waves.iterator();
 			for (int d=0;d<Waves.size();d++){
 				JSONArray Products = (JSONArray)Waves.get(d);
-				Iterator g = Products.iterator();
 
-				while (g.hasNext()){
-					JSONObject tmpP = (JSONObject)g.next();
+				for (int index=0;index<Products.size();index++){
+					JSONObject tmpP = (JSONObject)Products.get(index);
 					Long qty = (long)tmpP.get("qty");
 					Integer count = Integer.valueOf(qty.intValue());
-					String pPlanName = (String)tmpP.get("Product");
-
+					String pPlanName = (String)tmpP.get("product");
+					System.out.println("product name: "+pPlanName+" qty:"+qty);
 					while (count>0){
 						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),(long)tmpP.get("startId"));
 						pool.submit(newTask);
-								count--;
+						count--;
 					}
-
 				}
 
 			}
