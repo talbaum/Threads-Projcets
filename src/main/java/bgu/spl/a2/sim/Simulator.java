@@ -39,13 +39,14 @@ public class Simulator {
 	* Should not be called before attachWorkStealingThreadPool()
 	*/
     public static ConcurrentLinkedQueue<Product> start(){
+
 		ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
 		try {
 
-			//Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
-			Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
@@ -53,6 +54,7 @@ public class Simulator {
 			Long Threads = (long)jsonObject.get("threads");
 			Integer t = Integer.valueOf(Threads.intValue());
 			System.out.println("Threads: "+t);
+			pool = new WorkStealingThreadPool(t);
 
 			//start checking for tools and their number
 			JSONArray tools = (JSONArray)jsonObject.get("tools");
@@ -124,6 +126,8 @@ public class Simulator {
 						count--;
 					}
 				}
+
+				//pool.start();
 
 			}
 
