@@ -5,13 +5,10 @@
  */
 package bgu.spl.a2.sim;
 
-import static java.lang.Math.toIntExact;
 import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,12 +17,8 @@ import bgu.spl.a2.sim.tasks.ManufactoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
-import bgu.spl.a2.sim.tools.Tool;
 import org.json.simple.*;
 import org.json.simple.parser.*;
-
-import javax.swing.text.html.HTMLDocument;
-//import org.json.simple.parser.JSONParser;
 
 
 /**
@@ -127,7 +120,7 @@ public class Simulator {
 					}
 				}
 
-				//pool.start();
+				pool.start();
 
 			}
 
@@ -152,6 +145,18 @@ public class Simulator {
 	}
 	
 	public static void main(String [] args) {
-		start();
+		ConcurrentLinkedQueue<Product> SimulationResult;
+		SimulationResult = start();
+		try {
+			FileOutputStream fout = new FileOutputStream("result.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+			oos.writeObject(SimulationResult);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

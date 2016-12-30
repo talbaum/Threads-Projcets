@@ -54,6 +54,7 @@ public class Product {
 	 */
 	public List<Product> getParts(){
 		List<Product> partsList = new LinkedList<>();
+		if (Parts!=null)  //fixed a problem but shouldnt be getting null anyway!
 		for (Product part : Parts){
 			partsList.add(part);
 		}
