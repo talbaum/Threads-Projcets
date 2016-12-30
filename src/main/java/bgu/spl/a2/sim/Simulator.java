@@ -105,8 +105,12 @@ public class Simulator {
 			}
 
 
-			//JSONArray Waves = (JSONArray)jsonObject.get("waves");
-			//i = plans.iterator();
+			JSONArray Waves = (JSONArray)jsonObject.get("waves");
+			i = Waves.iterator();
+			while (i.hasNext()){
+
+
+			}
 
 
 
