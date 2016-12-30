@@ -24,7 +24,9 @@ public class ManufactoringTask extends Task <Product>{
 
     protected void start(){
         if (myProd.getParts().size()>0){
-            for( p : myProd.getParts())
+         //   for( p : myProd.getParts()){
+
+           // }
         }
 
 

@@ -5,14 +5,20 @@
  */
 package bgu.spl.a2.sim;
 
+import static java.lang.Math.toIntExact;
 import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import bgu.spl.a2.sim.tools.GcdScrewDriver;
+import bgu.spl.a2.sim.tools.NextPrimeHammer;
+import bgu.spl.a2.sim.tools.RandomSumPliers;
 import bgu.spl.a2.sim.tools.Tool;
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -37,11 +43,14 @@ public class Simulator {
 		Warehouse myWare = new Warehouse();
 		try {
 
-			Object obj = parser.parse(new FileReader("/simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
-			int Threads = (int) jsonObject.get("threads");
+
+			Long Threads = (long)jsonObject.get("threads");
+			Integer t = Integer.valueOf(Threads.intValue());
+			System.out.println("Threads: "+t);
 
 			//start checking for tools and their number
 			JSONArray tools = (JSONArray)jsonObject.get("tools");
@@ -49,15 +58,21 @@ public class Simulator {
 			while (i.hasNext()){
 				JSONObject tmp = (JSONObject)i.next();
 				String name = (String)tmp.get("tool");
-				int numOf = (int)tmp.get("qty");
+
+				Long num = (long)tmp.get("qty");
+				Integer numOf = Integer.valueOf(num.intValue());
+				//int numOf = (int)tmp.get("qty");
 				if (name.equals("gs-driver")){
-					//gs-driver add numOf
+					System.out.println("tool: "+name + " num: "+numOf);
+					myWare.addTool(new GcdScrewDriver(),numOf);
 				}
-				else if (name.equals("p-hammer")){
-					//need to write
+				else if (name.equals("np-hammer")){
+					System.out.println("tool: "+name + " num: "+numOf);
+					myWare.addTool(new NextPrimeHammer(),numOf);
 				}
 				else if (name.equals("rs-pliers")){
-					//need to write
+					System.out.println("tool: "+name + " num: "+numOf);
+					myWare.addTool(new RandomSumPliers(),numOf);
 				}
 			}
 
@@ -85,8 +100,14 @@ public class Simulator {
 
 				//create new plan here
 				ManufactoringPlan tmpPlan = new ManufactoringPlan(name,tmpParts,tmpTools);
+				System.out.println("name:"+name+ " parts:"+ Arrays.toString(tmpParts)+ " tools:"+Arrays.toString(tmpTools));
 				myWare.addPlan(tmpPlan);
 			}
+
+
+			//JSONArray Waves = (JSONArray)jsonObject.get("waves");
+			//i = plans.iterator();
+
 
 
 		} catch (FileNotFoundException e) {
@@ -101,7 +122,6 @@ public class Simulator {
 
 	}
 
-	
 	/**
 	* attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
 	* @param myWorkStealingThreadPool - the WorkStealingThreadPool which will be used by the simulator
@@ -111,6 +131,6 @@ public class Simulator {
 	}
 	
 	public static void main(String [] args) {
-
+		start();
 	}
 }
