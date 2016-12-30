@@ -56,12 +56,12 @@ public class ManufactoringTask extends Task <Product>{
                     for (ManufactoringTask task : miniTasks)
                         sumOfAll += task.getResult().get().getFinalId();
 
-                    myProd.setFinalId(sumOfAll);
+                    myProd.setFinalId(sumOfAll); //need to make sure if needed
                     complete(myProd);
                 }
             }); //end of lambda
         }
-        else { // the first if. means num of parts is 0. (plan.getParts().length == 0)
+        else { // the first if. means num of parts is 0 - (plan.getParts().length == 0)
             if (plan.getTools().length > 0)
                 toolsCheck();
             else
