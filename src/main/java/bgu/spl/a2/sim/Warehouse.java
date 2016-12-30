@@ -110,7 +110,7 @@ public class Warehouse {
 				hammersCount.incrementAndGet();
 				if(!waitingHammers.isEmpty()){
 					waitingHammers.poll().resolve(new NextPrimeHammer());
-					//hammersCount.decrementAndGet();
+
 				}
 				break;
 

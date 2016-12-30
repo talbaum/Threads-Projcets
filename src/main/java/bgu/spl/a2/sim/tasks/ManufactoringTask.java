@@ -12,15 +12,21 @@ public class ManufactoringTask extends Task <Product>{
     Warehouse warehouse;
     ManufactoringPlan plan;
     long startId;
+    Product myProd;
 
 
-    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId){
+    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId, Product myProd){
         this.warehouse=warehouse;
         this.plan=plan;
         this.startId=startId;
+        this.myProd=myProd;
     }
 
     protected void start(){
+        if (myProd.getParts().size()>0){
+            for( p : myProd.getParts())
+        }
+
 
     }
 }
