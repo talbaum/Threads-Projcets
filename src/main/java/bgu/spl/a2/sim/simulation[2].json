@@ -1,6 +1,6 @@
 {
     "threads": 4,
-    
+
     "tools": [
         {
             "tool": "gs-driver",
@@ -119,5 +119,5 @@
             }
         ]
     ]
-	
+
 }
