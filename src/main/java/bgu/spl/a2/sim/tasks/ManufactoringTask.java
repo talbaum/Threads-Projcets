@@ -70,8 +70,8 @@ public class ManufactoringTask extends Task <Product>{
     }
 
     private void toolsCheck(){
-            Deferred<Tool> requestedTool;
             for(String toolName: plan.getTools()){
+                Deferred<Tool> requestedTool;
                 requestedTool=warehouse.acquireTool(toolName);
                 toolList.add(requestedTool);
 
