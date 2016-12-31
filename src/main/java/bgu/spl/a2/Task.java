@@ -80,10 +80,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param task the task to execute
      */
     protected final void spawn(Task<?>... task) {  //maybe sync
-        for (Task<?> curTask:task){
-            childTasks.add(curTask);
-            myProcessor.addTask(curTask);
+        if(myProcessor!=null) {
+            for (Task<?> curTask : task) {
+                childTasks.add(curTask);
+                myProcessor.addTask(curTask);
+            }
         }
+        else{
+            for (Task<?> curTask : task) {
+                myProcessor=curTask.myProcessor;
+                childTasks.add(curTask);
+                myProcessor.addTask(curTask);
+            }
+        }
+
     }
 
     /**

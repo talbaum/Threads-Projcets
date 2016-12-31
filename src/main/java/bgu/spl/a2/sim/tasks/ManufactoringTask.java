@@ -31,15 +31,19 @@ public class ManufactoringTask extends Task <Product> {
         toolList = new ArrayList<Deferred<Tool>>();
     }
 
-    protected void start() {
+    public void start() {
+
         if (plan.getParts().length > 0) {
             ManufactoringTask tmpTask;
             //create manifactured tasks for each part in the plan and then spawn them
             for (String part : plan.getParts()) {
-                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), startId + 1); //why +1 ??
+                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), startId + 1); //why +1 ?- this is how its defined in the task
                 miniTasks.add(tmpTask);
             }
+
+
             for (ManufactoringTask task : miniTasks) {
+                if(task!=null)
                 spawn(task);
             }
 

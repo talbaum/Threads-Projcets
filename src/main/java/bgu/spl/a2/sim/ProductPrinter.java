@@ -1,5 +1,7 @@
 package bgu.spl.a2.sim;
 
+import bgu.spl.a2.sim.tasks.ManufactoringTask;
+
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -15,6 +17,8 @@ public class ProductPrinter {
 
         System.out.println(String.format("}"));
     }
+
+
 
     public static void main(String args[]) throws Exception {
         ConcurrentLinkedQueue<Product> q;

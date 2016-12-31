@@ -45,8 +45,8 @@ public class Simulator {
 
 		try {
 
-			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
-			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			//Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
