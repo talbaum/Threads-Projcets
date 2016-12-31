@@ -23,7 +23,7 @@ public class VersionMonitor {
     static AtomicInteger foo;
 
 
-    VersionMonitor() {
+    public VersionMonitor() {
         foo = new AtomicInteger(1);
     }
 

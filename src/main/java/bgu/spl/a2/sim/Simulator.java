@@ -5,12 +5,14 @@
  */
 package bgu.spl.a2.sim;
 
+import bgu.spl.a2.VersionMonitor;
 import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import bgu.spl.a2.sim.tasks.ManufactoringTask;
@@ -26,6 +28,8 @@ import org.json.simple.parser.*;
  */
 public class Simulator {
 	static WorkStealingThreadPool pool;
+	static int ProductsLeftThisWave;
+	static VersionMonitor myVer = new VersionMonitor();
 	//static JSONParser parser;
 	/**
 	* Begin the simulation
@@ -36,6 +40,8 @@ public class Simulator {
 		ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
+		boolean firstStart=true;
+
 		try {
 
 			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
@@ -43,7 +49,6 @@ public class Simulator {
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
-
 			Long Threads = (long)jsonObject.get("threads");
 			Integer t = Integer.valueOf(Threads.intValue());
 			System.out.println("Threads: "+t);
@@ -55,10 +60,8 @@ public class Simulator {
 			while (i.hasNext()){
 				JSONObject tmp = (JSONObject)i.next();
 				String name = (String)tmp.get("tool");
-
 				Long num = (long)tmp.get("qty");
 				Integer numOf = Integer.valueOf(num.intValue());
-				//int numOf = (int)tmp.get("qty");
 				if (name.equals("gs-driver")){
 					System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new GcdScrewDriver(),numOf);
@@ -82,11 +85,9 @@ public class Simulator {
 
 				JSONArray toolsInProduct = (JSONArray)tmp.get("tools");
 				String[] tmpTools = new String[toolsInProduct.size()];
-
 				for (int index1=0;index1<toolsInProduct.size();index1++){
 					tmpTools[index1]=(String)toolsInProduct.get(index1);
 				}
-
 
 				JSONArray partsInProduct = (JSONArray)tmp.get("parts");
 				String[] tmpParts = new String[partsInProduct.size()];
@@ -94,18 +95,18 @@ public class Simulator {
 					tmpParts[index1]=(String)partsInProduct.get(index1);
 				}
 
-
 				//create new plan here
 				ManufactoringPlan tmpPlan = new ManufactoringPlan(name,tmpParts,tmpTools);
 				System.out.println("name:"+name+ " parts:"+ Arrays.toString(tmpParts)+ " tools:"+Arrays.toString(tmpTools));
 				myWare.addPlan(tmpPlan);
 			}
 
-
 			JSONArray Waves = (JSONArray)jsonObject.get("waves");
+
 			for (int d=0;d<Waves.size();d++){
 				JSONArray Products = (JSONArray)Waves.get(d);
 
+				ProductsLeftThisWave=Products.size();
 				for (int index=0;index<Products.size();index++){
 					JSONObject tmpP = (JSONObject)Products.get(index);
 					Long qty = (long)tmpP.get("qty");
@@ -114,16 +115,30 @@ public class Simulator {
 					System.out.println("product name: "+pPlanName+" qty:"+qty);
 					while (count>0){
 						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),(long)tmpP.get("startId"));
-						Runnable callback  = () -> finishedProducts.add(newTask.getResult().get());
+
+						Runnable callback  = () -> {
+							finishedProducts.add(newTask.getResult().get());
+							oneLessProduct();
+						};
 						newTask.getResult().whenResolved(callback);
-						//System.out.println(newTask.toString());
 						pool.submit(newTask);
 						count--;
 					}
 				}
+				if (firstStart){
+					pool.start();
+					firstStart=false;
+				}
+
+				int cur = myVer.getVersion();
+				try {
+					myVer.await(cur);
+				}
+				catch (Exception e){
+				}
 			}
+
 			try {
-				pool.start();
 				pool.shutdown();
 			}
 			catch (InterruptedException e){
@@ -140,6 +155,13 @@ public class Simulator {
 		System.out.println(finishedProducts.size() + " is the size of finished products");
 		return finishedProducts;
 
+	}
+
+	 static void oneLessProduct (){
+    	ProductsLeftThisWave--;
+    	if (ProductsLeftThisWave<1){
+    	myVer.inc();
+		}
 	}
 
 	/**
@@ -168,7 +190,7 @@ public class Simulator {
 			e.printStackTrace();
 		}
 		catch (ClassNotFoundException e){
-
+			e.printStackTrace();
 		}
 
 	}
