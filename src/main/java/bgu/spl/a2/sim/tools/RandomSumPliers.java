@@ -21,6 +21,7 @@ import java.util.Random;
 		for(Product part : p.getParts()){
 			value+=Math.abs(func(part.getStartId()));
 		}
+		//System.out.println("sumpilers has been used :)");
 		return value;
 	}
 
