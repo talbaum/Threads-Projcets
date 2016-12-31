@@ -30,6 +30,7 @@ public class Simulator {
 	static WorkStealingThreadPool pool;
 	static int ProductsLeftThisWave;
 	static VersionMonitor myVer = new VersionMonitor();
+    static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
 	//static JSONParser parser;
 	/**
 	* Begin the simulation
@@ -37,7 +38,7 @@ public class Simulator {
 	*/
     public static ConcurrentLinkedQueue<Product> start(){
 
-		ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
+
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
 		boolean firstStart=true;
@@ -119,6 +120,7 @@ public class Simulator {
 						Runnable callback  = () -> {
 							finishedProducts.add(newTask.getResult().get());
 							oneLessProduct();
+                            System.out.println("working!!!");
 						};
 						newTask.getResult().whenResolved(callback);
 						pool.submit(newTask);
@@ -160,8 +162,9 @@ public class Simulator {
 	 static void oneLessProduct (){
     	ProductsLeftThisWave--;
     	if (ProductsLeftThisWave<1){
-    	myVer.inc();
-		}
+    	    myVer.inc();
+
+        }
 	}
 
 	/**

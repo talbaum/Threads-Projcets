@@ -22,6 +22,8 @@ public class Product {
 	public Product(long startId, String name){
 		this.name=name;
 		this.startId=startId;
+		Tools = new ConcurrentLinkedDeque<>();
+		Parts = new ConcurrentLinkedDeque<>();
 	}
 
 	/**
