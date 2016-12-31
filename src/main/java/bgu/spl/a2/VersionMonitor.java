@@ -42,7 +42,9 @@ public class VersionMonitor {
 
     public void await(int myversion) throws InterruptedException {
         synchronized (foo) {
+
         while (this.foo.get() == myversion) {
+            System.out.println("im waiting now and its working good");
                 foo.wait();
             }
         }

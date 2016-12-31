@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 /**
  * A class that represents a product produced during the simulation.
  */
-public class Product {
+public class Product implements java.io.Serializable {
 	private ConcurrentLinkedDeque<Tool> Tools;
 	private ConcurrentLinkedDeque<Product> Parts;
 	private long startId;

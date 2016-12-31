@@ -19,6 +19,7 @@ import bgu.spl.a2.sim.tasks.ManufactoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
@@ -38,21 +39,21 @@ public class Simulator {
 	*/
     public static ConcurrentLinkedQueue<Product> start(){
 
-
+        //finishedProducts = new ConcurrentLinkedQueue<>();
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
 		boolean firstStart=true;
 
 		try {
 
-			//Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
-			Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
 			Long Threads = (long)jsonObject.get("threads");
 			Integer t = Integer.valueOf(Threads.intValue());
-			System.out.println("Threads: "+t);
+			//System.out.println("Threads: "+t);
 			pool = new WorkStealingThreadPool(t);
 
 			//start checking for tools and their number
@@ -64,15 +65,15 @@ public class Simulator {
 				Long num = (long)tmp.get("qty");
 				Integer numOf = Integer.valueOf(num.intValue());
 				if (name.equals("gs-driver")){
-					System.out.println("tool: "+name + " num: "+numOf);
+					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new GcdScrewDriver(),numOf);
 				}
 				else if (name.equals("np-hammer")){
-					System.out.println("tool: "+name + " num: "+numOf);
+					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new NextPrimeHammer(),numOf);
 				}
 				else if (name.equals("rs-pliers")){
-					System.out.println("tool: "+name + " num: "+numOf);
+					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new RandomSumPliers(),numOf);
 				}
 			}
@@ -98,7 +99,7 @@ public class Simulator {
 
 				//create new plan here
 				ManufactoringPlan tmpPlan = new ManufactoringPlan(name,tmpParts,tmpTools);
-				System.out.println("name:"+name+ " parts:"+ Arrays.toString(tmpParts)+ " tools:"+Arrays.toString(tmpTools));
+				//System.out.println("name:"+name+ " parts:"+ Arrays.toString(tmpParts)+ " tools:"+Arrays.toString(tmpTools));
 				myWare.addPlan(tmpPlan);
 			}
 
@@ -118,9 +119,10 @@ public class Simulator {
 						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),(long)tmpP.get("startId"));
 
 						Runnable callback  = () -> {
-							finishedProducts.add(newTask.getResult().get());
+                            //System.out.println(newTask.getResult().get());
+                            //System.out.println(finishedProducts.size());
+                            finishedProducts.add(newTask.getResult().get());
 							oneLessProduct();
-                            System.out.println("working!!!");
 						};
 						newTask.getResult().whenResolved(callback);
 						pool.submit(newTask);
@@ -137,6 +139,7 @@ public class Simulator {
 					myVer.await(cur);
 				}
 				catch (Exception e){
+                    System.out.println(e.getMessage());
 				}
 			}
 
@@ -155,6 +158,7 @@ public class Simulator {
 			e.printStackTrace();
 		}
 		System.out.println(finishedProducts.size() + " is the size of finished products");
+
 		return finishedProducts;
 
 	}
@@ -163,7 +167,6 @@ public class Simulator {
     	ProductsLeftThisWave--;
     	if (ProductsLeftThisWave<1){
     	    myVer.inc();
-
         }
 	}
 
@@ -178,14 +181,16 @@ public class Simulator {
 	public static void main(String [] args) {
 		ConcurrentLinkedQueue<Product> SimulationResult;
 		SimulationResult = start();
+
 		try {
-			FileOutputStream fout = new FileOutputStream("result.ser");
+			FileOutputStream fout = new FileOutputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 			oos.writeObject(SimulationResult);
 
-			FileInputStream fin = new FileInputStream("result.ser");
+			FileInputStream fin = new FileInputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			System.out.println(ois.readObject());
+            ois.close();
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -195,6 +200,10 @@ public class Simulator {
 		catch (ClassNotFoundException e){
 			e.printStackTrace();
 		}
+        System.out.println("answer size:"+SimulationResult.size());
 
+        for (Product p: SimulationResult){
+            ProductPrinter.printProduct(p);
+        }
 	}
 }

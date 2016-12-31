@@ -23,7 +23,8 @@ public class ProductPrinter {
     public static void main(String args[]) throws Exception {
         ConcurrentLinkedQueue<Product> q;
         //amit - add your file path here!
-        FileInputStream fis = new FileInputStream("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\result.ser");
+        FileInputStream fis = new FileInputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
+        //FileInputStream fis = new FileInputStream("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\result.ser");
         ObjectInputStream ois = new ObjectInputStream(fis);
 
         q = (ConcurrentLinkedQueue<Product>) ois.readObject();
