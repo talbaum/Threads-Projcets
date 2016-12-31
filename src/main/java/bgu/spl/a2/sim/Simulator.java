@@ -136,7 +136,7 @@ public class Simulator {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-
+		System.out.println(finishedProducts.size() + " is the size of finished products");
 		return finishedProducts;
 
 	}
