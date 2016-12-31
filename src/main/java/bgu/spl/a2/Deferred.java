@@ -58,26 +58,25 @@ public class Deferred<T> {
         //TODO: replace method body with real implementation
         if (value == null) {
             throw new IllegalStateException("resolve has got a null value!");
-        }
-        else {
+        } else {
             if (isResolved()) {
                 throw new IllegalStateException("this object has already been resolved!");
             } else {
                 myObject = value;
                 resolved = true;
+                if (!doAfterResolve.isEmpty())
                     try {
-                        while (!doAfterResolve.isEmpty()) {
-                            Runnable tmp =doAfterResolve.poll();
-                            tmp.run();
-                        }
+                    while (!doAfterResolve.isEmpty()) {
+                        Runnable tmp = doAfterResolve.poll();
+                        tmp.run();
                     }
-                    catch (Exception e){
-                        System.out.println("doAfterResolve exception (in deffered class)" + e.getMessage());
-                    }
+                } catch (NullPointerException e) {
+                    System.out.println("doAfterResolve exception (in deffered class)" + e.getMessage());
+
                 }
             }
+        }
     }
-
     /**
      * add a callback to be called when this object is resolved. if while
      * calling this method the object is already resolved - the callback should

@@ -64,7 +64,7 @@ public class ManufactoringTask extends Task <Product>{
         else { // the first if. means num of parts is 0 - (plan.getParts().length == 0)
             if (plan.getTools().length > 0)
                 toolsCheck();
-            else
+            else //means 0 parts and 0 tools left
                 complete(myProd);
         }
     }
@@ -82,7 +82,7 @@ public class ManufactoringTask extends Task <Product>{
                     warehouse.releaseTool(requestedTool.get());
 
                     //if this was the last tool needed , complete and finish
-                    AtomicInteger numOfTools=new AtomicInteger(toolList.size());
+                    AtomicInteger numOfTools=new AtomicInteger(toolList.size());// (plan.getTools().length); ?
                     if(numOfTools.decrementAndGet()==0)
                         complete(myProd);
                 }); //end of lambda

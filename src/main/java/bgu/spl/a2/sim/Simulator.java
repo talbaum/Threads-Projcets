@@ -38,8 +38,8 @@ public class Simulator {
 		Warehouse myWare = new Warehouse();
 		try {
 
-			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
-			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			//Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
@@ -115,15 +115,19 @@ public class Simulator {
 					System.out.println("product name: "+pPlanName+" qty:"+qty);
 					while (count>0){
 						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),(long)tmpP.get("startId"));
+						//System.out.println(newTask.toString());
 						pool.submit(newTask);
 						count--;
 					}
 				}
-
-				pool.start();
-
 			}
-
+			pool.start();
+			try {
+				pool.shutdown();
+			}
+			catch (InterruptedException e){
+				System.out.println("interrupted exception "+ e.getMessage());
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
