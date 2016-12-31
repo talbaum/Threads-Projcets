@@ -122,6 +122,7 @@ public class Simulator {
 				}
 			}
 			pool.start();
+
 			try {
 				pool.shutdown();
 			}

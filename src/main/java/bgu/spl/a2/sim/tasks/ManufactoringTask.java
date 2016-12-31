@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by baum on 29/12/2016.
  */
-public class ManufactoringTask extends Task <Product>{
+public class ManufactoringTask extends Task <Product> {
     Warehouse warehouse;
     ManufactoringPlan plan;
     long startId;
@@ -22,13 +22,13 @@ public class ManufactoringTask extends Task <Product>{
     ArrayList<Deferred<Tool>> toolList;
 
 
-    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId){
-        this.warehouse=warehouse;
-        this.plan=plan;
-        this.startId=startId;
-        myProd = new Product(startId,plan.getProductName());
-        miniTasks=new ArrayList<ManufactoringTask>();
-        toolList=new ArrayList<Deferred<Tool>>();
+    public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId) {
+        this.warehouse = warehouse;
+        this.plan = plan;
+        this.startId = startId;
+        myProd = new Product(startId, plan.getProductName());
+        miniTasks = new ArrayList<ManufactoringTask>();
+        toolList = new ArrayList<Deferred<Tool>>();
     }
 
     protected void start() {
@@ -60,8 +60,7 @@ public class ManufactoringTask extends Task <Product>{
                     complete(myProd);
                 }
             }); //end of lambda
-        }
-        else { // the first if. means num of parts is 0 - (plan.getParts().length == 0)
+        } else { // the first if. means num of parts is 0 - (plan.getParts().length == 0)
             if (plan.getTools().length > 0)
                 toolsCheck();
             else //means 0 parts and 0 tools left
@@ -69,25 +68,43 @@ public class ManufactoringTask extends Task <Product>{
         }
     }
 
-    private void toolsCheck(){
-            for(String toolName: plan.getTools()){
-                Deferred<Tool> requestedTool;
-                requestedTool=warehouse.acquireTool(toolName);
-                toolList.add(requestedTool);
+    private void toolsCheck() {
+        for (String toolName : plan.getTools()) {
+            Deferred<Tool> requestedTool;
+            requestedTool = warehouse.acquireTool(toolName);
+            toolList.add(requestedTool);
 
-                //after we finished using the tool, do that:
-                requestedTool.whenResolved(()->{
-                    long idAfterUse= requestedTool.get().useOn(myProd);
-                    myProd.setFinalId(idAfterUse);
-                    warehouse.releaseTool(requestedTool.get());
+            //after we finished using the tool, do that:
+            requestedTool.whenResolved(() -> {
+                long idAfterUse = requestedTool.get().useOn(myProd);
+                myProd.setFinalId(idAfterUse);
+                warehouse.releaseTool(requestedTool.get());
 
-                    //if this was the last tool needed , complete and finish
-                    AtomicInteger numOfTools=new AtomicInteger(toolList.size());// (plan.getTools().length); ?
-                    if(numOfTools.decrementAndGet()==0)
-                        complete(myProd);
-                }); //end of lambda
-            } //end of for
-        }//end of toolCheck
+                //if this was the last tool needed , complete and finish
+                AtomicInteger numOfTools = new AtomicInteger(toolList.size());// (plan.getTools().length); ?
+                if (numOfTools.decrementAndGet() == 0)
+                    complete(myProd);
+            }); //end of lambda
+        } //end of for
+    }//end of toolCheck
 
+
+    public String printProduct() {
+        String des = "ProductName: ";
+        des += myProd.getName();
+        des += " Product Id = " + myProd.getFinalId();
+        des += "\n" + "PartsList {" + "\n";
+        if (miniTasks != null) {
+            for (ManufactoringTask p : this.miniTasks) {
+                if (p != null) {
+                    des += p.printProduct();
+                }
+                des += "}" + "\n";
+
+            }
         }
 
+        return des;
+    }
+
+}
