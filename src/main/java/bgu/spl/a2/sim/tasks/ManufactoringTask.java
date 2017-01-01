@@ -20,6 +20,7 @@ public class ManufactoringTask extends Task <Product> {
     Product myProd;
     ArrayList<ManufactoringTask> miniTasks;
     ArrayList<Deferred<Tool>> toolList;
+    AtomicInteger numOfTools;
 
 
     public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId) {
@@ -29,9 +30,10 @@ public class ManufactoringTask extends Task <Product> {
         myProd = new Product(startId, plan.getProductName());
         miniTasks = new ArrayList<ManufactoringTask>();
         toolList = new ArrayList<Deferred<Tool>>();
+        numOfTools=new AtomicInteger(plan.getTools().length);
     }
 
-    public void start() {
+    public synchronized void start() {
 
         if (plan.getParts().length > 0) {
             ManufactoringTask tmpTask;
@@ -77,13 +79,13 @@ public class ManufactoringTask extends Task <Product> {
             //after we finished using the tool, do that:
             requestedTool.whenResolved(() -> {
                 long idAfterUse = requestedTool.get().useOn(myProd);
-                //long cur = myProd.getFinalId();
-                //myProd.setFinalId(cur+idAfterUse);
+                long cur = myProd.getFinalId();
+                myProd.setFinalId(cur+idAfterUse);
                 warehouse.releaseTool(requestedTool.get());
 
                 //if this was the last tool needed , complete and finish
-                AtomicInteger numOfTools = new AtomicInteger(toolList.size());// (plan.getTools().length); ?
-                if (numOfTools.decrementAndGet() == 0)
+               // AtomicInteger numOfTools = new AtomicInteger(toolList.size());// (plan.getTools().length); ?
+                if (this.numOfTools.decrementAndGet() == 0)
                     complete(myProd);
             }); //end of lambda
         } //end of for

@@ -49,7 +49,7 @@ public class Warehouse {
 	 * @param type - string describing the required tool
 	 * @return a deferred promise for the  requested tool
 	 */
-	public Deferred<Tool> acquireTool(String type) {
+	public synchronized Deferred<Tool> acquireTool(String type) {
 		Deferred<Tool> ans = new Deferred<Tool>();
 		switch (type) {
 			case "gs-driver":

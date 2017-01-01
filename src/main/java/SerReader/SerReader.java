@@ -21,7 +21,7 @@ public class SerReader {
 
         SerReader obj = new SerReader();
 
-        ConcurrentLinkedQueue<Product> res = obj.deserialzeObject(args[0]);
+        ConcurrentLinkedQueue<Product> res = obj.deserialzeObject("result.ser");
 
         if (res == null) {
             System.out.println("error -> null object");
