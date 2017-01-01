@@ -106,7 +106,7 @@ public class Simulator {
 			for (int d=0;d<Waves.size();d++){
 				JSONArray Products = (JSONArray)Waves.get(d);
 
-				ProductsLeftThisWave=Products.size();
+				ProductsLeftThisWave=0;
 				for (int index=0;index<Products.size();index++){
 					JSONObject tmpP = (JSONObject)Products.get(index);
 					Long qty = (long)tmpP.get("qty");
@@ -162,10 +162,12 @@ public class Simulator {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+
 		while (true){
 			if (finishedProducts.size()==productIndex)
 				break;
 		}
+
 		Product[] tmpFinal = new Product[productIndex];
 		for (int i=0;i<productIndex;i++){
 			Product FinalP = finishedProducts.poll();
@@ -183,8 +185,8 @@ public class Simulator {
 	}
 
 	 static void oneLessProduct (){
-    	ProductsLeftThisWave--;
-    	if (ProductsLeftThisWave<1){
+    	ProductsLeftThisWave++;
+    	if (ProductsLeftThisWave==productIndex-1){
     	    myVer.inc();
         }
 	}
