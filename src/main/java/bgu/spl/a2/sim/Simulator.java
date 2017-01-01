@@ -181,7 +181,7 @@ public class Simulator {
 		ConcurrentLinkedQueue<Product> SimulationResult;
 		SimulationResult = start();
 		try {
-			Thread.sleep(900);
+			Thread.sleep(3000);
 		}
 		catch (Exception e){}
 
