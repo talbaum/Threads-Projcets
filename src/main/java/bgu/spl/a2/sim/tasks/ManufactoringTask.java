@@ -6,7 +6,6 @@ import bgu.spl.a2.sim.Product;
 import bgu.spl.a2.sim.Warehouse;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 import bgu.spl.a2.sim.tools.Tool;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,11 +16,16 @@ public class ManufactoringTask extends Task <Product> {
     Warehouse warehouse;
     ManufactoringPlan plan;
     long startId;
+    public int index;
     Product myProd;
     ArrayList<ManufactoringTask> miniTasks;
     ArrayList<Deferred<Tool>> toolList;
     AtomicInteger numOfTools;
 
+
+    public Product getMyProd() {
+        return myProd;
+    }
 
     public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId) {
         this.warehouse = warehouse;
@@ -40,10 +44,9 @@ public class ManufactoringTask extends Task <Product> {
             //create manifactured tasks for each part in the plan and then spawn themi
             long tmpy = startId + 1;
             for (String part : plan.getParts()) {
-                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), tmpy); //why +1 ?- this is how its defined in the task
+                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), tmpy);
                 miniTasks.add(tmpTask);
             }
-
 
             for (ManufactoringTask task : miniTasks) {
                 if(task!=null)
@@ -91,6 +94,9 @@ public class ManufactoringTask extends Task <Product> {
         } //end of for
     }//end of toolCheck
 
+    int getIndex(){
+        return index;
+    }
 
     public String printProduct() {
         String des = "ProductName: ";

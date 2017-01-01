@@ -10,6 +10,7 @@ import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -29,6 +30,7 @@ public class Simulator {
 	static int ProductsLeftThisWave;
 	static VersionMonitor myVer = new VersionMonitor();
     static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
+    static int productIndex=0;
 	//static JSONParser parser;
 	/**
 	* Begin the simulation
@@ -42,8 +44,8 @@ public class Simulator {
 
 		try {
 
-			//Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
-			Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			Object obj = parser.parse(new FileReader("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
+			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
@@ -100,7 +102,7 @@ public class Simulator {
 			}
 
 			JSONArray Waves = (JSONArray)jsonObject.get("waves");
-
+			//int productIndex=0;
 			for (int d=0;d<Waves.size();d++){
 				JSONArray Products = (JSONArray)Waves.get(d);
 
@@ -115,12 +117,15 @@ public class Simulator {
 					Long ID = (long)tmpP.get("startId");
 					while (count>0){
 						ManufactoringTask newTask = new ManufactoringTask(myWare,myWare.getPlan(pPlanName),ID);
+						newTask.getMyProd().setIndex(productIndex);
+						productIndex++;
 						ID++;
 
 						Runnable callback  = () -> {
                             //System.out.println(newTask.getResult().get());
                             //System.out.println(finishedProducts.size());
                             finishedProducts.add(newTask.getResult().get());
+
 							oneLessProduct();
 						};
 						newTask.getResult().whenResolved(callback);
@@ -142,6 +147,7 @@ public class Simulator {
 				}
 			}
 
+
 			try {
 				pool.shutdown();
 			}
@@ -156,9 +162,23 @@ public class Simulator {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		System.out.println(finishedProducts.size() + " is the size of finished products");
+		while (true){
+			if (finishedProducts.size()==productIndex)
+				break;
+		}
+		Product[] tmpFinal = new Product[productIndex];
+		for (int i=0;i<productIndex;i++){
+			Product FinalP = finishedProducts.poll();
+			tmpFinal[FinalP.getIndex()] = FinalP;
+		}
 
-		return finishedProducts;
+		ConcurrentLinkedQueue<Product> FinalJob = new ConcurrentLinkedQueue<Product>();
+		for (int i=0;i<productIndex;i++){
+			FinalJob.add(tmpFinal[i]);
+		}
+		System.out.println(productIndex + " is the size of finished products");
+
+		return FinalJob;
 
 	}
 
@@ -181,16 +201,16 @@ public class Simulator {
 		ConcurrentLinkedQueue<Product> SimulationResult;
 		SimulationResult = start();
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		}
 		catch (Exception e){}
 
 			try {
-			FileOutputStream fout = new FileOutputStream("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
+			FileOutputStream fout = new FileOutputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 			oos.writeObject(SimulationResult);
 
-			FileInputStream fin = new FileInputStream("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
+			FileInputStream fin = new FileInputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			System.out.println(ois.readObject());
             ois.close();

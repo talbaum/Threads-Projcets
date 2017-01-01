@@ -13,6 +13,8 @@ public class Product implements java.io.Serializable {
 	private long startId;
 	private String name;
 	private long finalID;
+	private int index;
+
 
 	/**
 	 * Constructor
@@ -53,6 +55,13 @@ public class Product implements java.io.Serializable {
 	{
 		finalID=id;
 	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public int getIndex() {	return index; }
+
 	/**
 	 * @return Returns all parts of this product as a List of Products
 	 */
