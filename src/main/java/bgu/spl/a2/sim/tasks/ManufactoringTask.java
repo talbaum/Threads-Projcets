@@ -33,7 +33,7 @@ public class ManufactoringTask extends Task <Product> {
         numOfTools=new AtomicInteger(plan.getTools().length);
     }
 
-    public synchronized void start() {
+    public void start() {
 
         if (plan.getParts().length > 0) {
             ManufactoringTask tmpTask;
