@@ -17,10 +17,9 @@ import java.util.Random;
 	* @return a long describing the result of tool use on Product package
 	*/
 	public long useOn(Product p){
-		long value=0;
+		long value = 0;
 		for(Product part : p.getParts()){
 			value+=Math.abs(func(part.getFinalId()));
-
 		}
 		return value;
 	}

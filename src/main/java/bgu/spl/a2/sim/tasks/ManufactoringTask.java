@@ -35,9 +35,9 @@ public class ManufactoringTask extends Task <Product> {
 
         if (plan.getParts().length > 0) {
             ManufactoringTask tmpTask;
-            //create manifactured tasks for each part in the plan and then spawn them
+            //create manifactured tasks for each part in the plan and then spawn themi
             for (String part : plan.getParts()) {
-                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), startId + 1); //why +1 ?- this is how its defined in the task
+                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), myProd.getStartId() + 1); //why +1 ?- this is how its defined in the task
                 miniTasks.add(tmpTask);
             }
 
