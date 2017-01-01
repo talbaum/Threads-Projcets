@@ -14,5 +14,5 @@ public interface Tool {
 	* @param p - Product to use tool on
 	* @return a long describing the result of tool use on Product package
 	*/
-    public abstract long useOn(Product p);
+    public abstract  long useOn(Product p);
 }

@@ -16,13 +16,13 @@ import java.util.Random;
 	* @param p - Product to use tool on
 	* @return a long describing the result of tool use on Product package
 	*/
-	public long useOn(Product p){
+	public synchronized long useOn(Product p){
 		long value = 0;
 		for(Product part : p.getParts()){
 			value+=Math.abs(func(part.getFinalId()));
 		}
-		/*long cur =p.getFinalId();
-		p.setFinalId(cur+value);*/
+		long cur =p.getFinalId();
+		p.setFinalId(cur+value);
 		return value;
 	}
 
@@ -32,6 +32,7 @@ import java.util.Random;
 		for (long i = 0; i < id % 10000; i++) {
 			sum += r.nextInt();
 		}
+
 		return sum;
 	}
 }

@@ -36,8 +36,9 @@ public class ManufactoringTask extends Task <Product> {
         if (plan.getParts().length > 0) {
             ManufactoringTask tmpTask;
             //create manifactured tasks for each part in the plan and then spawn themi
+            long tmpy = startId + 1;
             for (String part : plan.getParts()) {
-                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), myProd.getStartId() + 1); //why +1 ?- this is how its defined in the task
+                tmpTask = new ManufactoringTask(warehouse, warehouse.getPlan(part), tmpy); //why +1 ?- this is how its defined in the task
                 miniTasks.add(tmpTask);
             }
 
@@ -56,11 +57,6 @@ public class ManufactoringTask extends Task <Product> {
                 if (plan.getTools().length > 0)
                     toolsCheck();
                 else { //means no more tools , and all mini tasks were resolved
-                  /*  long sumOfAll = myProd.getFinalId();
-                    for (ManufactoringTask task : miniTasks)
-                    sumOfAll+=task.getResult().get().getFinalId();
-
-                   myProd.setFinalId(sumOfAll); //need to make sure if needed*/
                     complete(myProd);
                 }
             }); //end of lambda
@@ -81,7 +77,8 @@ public class ManufactoringTask extends Task <Product> {
             //after we finished using the tool, do that:
             requestedTool.whenResolved(() -> {
                 long idAfterUse = requestedTool.get().useOn(myProd);
-                myProd.setFinalId(myProd.getFinalId()+idAfterUse);
+                //long cur = myProd.getFinalId();
+                //myProd.setFinalId(cur+idAfterUse);
                 warehouse.releaseTool(requestedTool.get());
 
                 //if this was the last tool needed , complete and finish
@@ -107,7 +104,6 @@ public class ManufactoringTask extends Task <Product> {
 
             }
         }
-
         return des;
     }
 
