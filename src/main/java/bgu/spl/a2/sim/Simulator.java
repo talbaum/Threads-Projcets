@@ -10,16 +10,13 @@ import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import bgu.spl.a2.sim.tasks.ManufactoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
@@ -39,7 +36,6 @@ public class Simulator {
 	*/
     public static ConcurrentLinkedQueue<Product> start(){
 
-        //finishedProducts = new ConcurrentLinkedQueue<>();
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
 		boolean firstStart=true;
