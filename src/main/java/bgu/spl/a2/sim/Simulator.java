@@ -29,14 +29,14 @@ public class Simulator {
 	static WorkStealingThreadPool pool;
 	static int ProductsLeftThisWave;
 	static VersionMonitor myVer = new VersionMonitor();
-    static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
-    static int productIndex=0;
+	static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
+	static int productIndex=0;
 	//static JSONParser parser;
 	/**
-	* Begin the simulation
-	* Should not be called before attachWorkStealingThreadPool()
-	*/
-    public static ConcurrentLinkedQueue<Product> start(){
+	 * Begin the simulation
+	 * Should not be called before attachWorkStealingThreadPool()
+	 */
+	public static ConcurrentLinkedQueue<Product> start(){
 
 		JSONParser parser = new JSONParser();
 		Warehouse myWare = new Warehouse();
@@ -122,9 +122,9 @@ public class Simulator {
 						ID++;
 
 						Runnable callback  = () -> {
-                            //System.out.println(newTask.getResult().get());
-                            //System.out.println(finishedProducts.size());
-                            finishedProducts.add(newTask.getResult().get());
+							//System.out.println(newTask.getResult().get());
+							//System.out.println(finishedProducts.size());
+							finishedProducts.add(newTask.getResult().get());
 
 							oneLessProduct();
 						};
@@ -132,19 +132,25 @@ public class Simulator {
 						pool.submit(newTask);
 						count--;
 					}
-				}
-				if (firstStart){
-					pool.start();
-					firstStart=false;
+					if (firstStart){
+						pool.start();
+						firstStart=false;
+					}
+
+					int cur = myVer.getVersion();
+					try {
+						myVer.await(cur);
+					}
+					catch (Exception e){
+						System.out.println(e.getMessage());
+					}
+
+					while (true){
+						if (finishedProducts.size()==productIndex)
+							break;
+					}
 				}
 
-				int cur = myVer.getVersion();
-				try {
-					myVer.await(cur);
-				}
-				catch (Exception e){
-                    System.out.println(e.getMessage());
-				}
 			}
 
 
@@ -163,10 +169,12 @@ public class Simulator {
 			e.printStackTrace();
 		}
 
+/*
 		while (true){
 			if (finishedProducts.size()==productIndex)
 				break;
 		}
+*/
 
 		Product[] tmpFinal = new Product[productIndex];
 		for (int i=0;i<productIndex;i++){
@@ -184,17 +192,17 @@ public class Simulator {
 
 	}
 
-	 static void oneLessProduct (){
-    	ProductsLeftThisWave++;
-    	if (ProductsLeftThisWave==productIndex-1){
-    	    myVer.inc();
-        }
+	static  synchronized void oneLessProduct (){
+		ProductsLeftThisWave++;
+		if (ProductsLeftThisWave==productIndex-1){
+			myVer.inc();
+		}
 	}
 
 	/**
-	* attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
-	* @param myWorkStealingThreadPool - the WorkStealingThreadPool which will be used by the simulator
-	*/
+	 * attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
+	 * @param myWorkStealingThreadPool - the WorkStealingThreadPool which will be used by the simulator
+	 */
 	public static void attachWorkStealingThreadPool(WorkStealingThreadPool myWorkStealingThreadPool){
 		pool=myWorkStealingThreadPool;
 	}
@@ -207,7 +215,7 @@ public class Simulator {
 		}
 		catch (Exception e){}
 
-			try {
+		try {
 			FileOutputStream fout = new FileOutputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 			oos.writeObject(SimulationResult);
@@ -215,7 +223,7 @@ public class Simulator {
 			FileInputStream fin = new FileInputStream("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			System.out.println(ois.readObject());
-            ois.close();
+			ois.close();
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -225,10 +233,10 @@ public class Simulator {
 		catch (ClassNotFoundException e){
 			e.printStackTrace();
 		}
-        System.out.println("answer size:"+SimulationResult.size());
+		System.out.println("answer size:"+SimulationResult.size());
 
-        for (Product p: SimulationResult){
-            ProductPrinter.printProduct(p);
-        }
+		for (Product p: SimulationResult){
+			ProductPrinter.printProduct(p);
+		}
 	}
 }
