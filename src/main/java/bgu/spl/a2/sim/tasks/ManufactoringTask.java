@@ -81,7 +81,7 @@ public class ManufactoringTask extends Task <Product> {
             //after we finished using the tool, do that:
             requestedTool.whenResolved(() -> {
                 long idAfterUse = requestedTool.get().useOn(myProd);
-                //myProd.setFinalId(myProd.getFinalId()+idAfterUse);
+                myProd.setFinalId(myProd.getFinalId()+idAfterUse);
                 warehouse.releaseTool(requestedTool.get());
 
                 //if this was the last tool needed , complete and finish
