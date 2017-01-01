@@ -19,9 +19,9 @@ import java.util.Random;
 	public long useOn(Product p){
 		long value=0;
 		for(Product part : p.getParts()){
-			value+=Math.abs(func(part.getStartId()));
+			value+=Math.abs(func(part.getFinalId()));
+
 		}
-		//System.out.println("sumpilers has been used :)");
 		return value;
 	}
 
@@ -31,7 +31,6 @@ import java.util.Random;
 		for (long i = 0; i < id % 10000; i++) {
 			sum += r.nextInt();
 		}
-
 		return sum;
 	}
 }

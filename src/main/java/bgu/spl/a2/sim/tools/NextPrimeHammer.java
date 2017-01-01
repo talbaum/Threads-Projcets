@@ -8,32 +8,32 @@ import bgu.spl.a2.sim.Product;
 		return "np-hammer";
 	}
 
-	public long useOn(Product p) {
-		long value = 0;
-		for (Product part : p.getParts()) {
-			value += Math.abs(func(part.getStartId()));
+		public long useOn(Product p){
+			long value=0;
+			for(Product part : p.getParts()){
+				value+=Math.abs(func(part.getFinalId()));
 
-		}
-		return value;
-	}
-
-	public long func(long id) {
-		long v = id + 1;
-		while (!isPrime(v)) {
-			v++;
-		}
-		return v;
-	}
-
-	private boolean isPrime(long value) {
-		if (value < 2) return false;
-		if (value == 2) return true;
-		long sq = (long) Math.sqrt(value);
-		for (long i = 2; i <= sq; i++) {
-			if (value % i == 0) {
-				return false;
 			}
+			return value;
 		}
-		return true;
-	}
+
+		public long func(long id) {
+			long v =id + 1;
+			while (!isPrime(v)) {
+				v++;
+			}
+			return v;
+		}
+
+		private boolean isPrime(long value) {
+			if(value < 2) return false;
+			if(value == 2) return true;
+			long sq = (long) Math.sqrt(value);
+			for (long i = 2; i <= sq; i++) {
+				if (value % i == 0) {
+					return false;
+				}
+			}
+			return true;
+		}
 }

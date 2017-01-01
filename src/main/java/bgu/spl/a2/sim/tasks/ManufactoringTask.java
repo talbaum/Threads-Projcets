@@ -56,11 +56,11 @@ public class ManufactoringTask extends Task <Product> {
                 if (plan.getTools().length > 0)
                     toolsCheck();
                 else { //means no more tools , and all mini tasks were resolved
-                    long sumOfAll = 0;
+                  /*  long sumOfAll = myProd.getFinalId();
                     for (ManufactoringTask task : miniTasks)
-                        sumOfAll += task.getResult().get().getFinalId();
+                    sumOfAll+=task.getResult().get().getFinalId();
 
-                    myProd.setFinalId(sumOfAll); //need to make sure if needed
+                   myProd.setFinalId(sumOfAll); //need to make sure if needed*/
                     complete(myProd);
                 }
             }); //end of lambda
@@ -81,7 +81,7 @@ public class ManufactoringTask extends Task <Product> {
             //after we finished using the tool, do that:
             requestedTool.whenResolved(() -> {
                 long idAfterUse = requestedTool.get().useOn(myProd);
-                myProd.setFinalId(idAfterUse);
+                myProd.setFinalId(myProd.getFinalId()+idAfterUse);
                 warehouse.releaseTool(requestedTool.get());
 
                 //if this was the last tool needed , complete and finish

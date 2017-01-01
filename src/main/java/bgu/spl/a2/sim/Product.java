@@ -12,7 +12,7 @@ public class Product implements java.io.Serializable {
 	private ConcurrentLinkedDeque<Product> Parts;
 	private long startId;
 	private String name;
-	private long finalID=0;
+	private long finalID;
 
 	/**
 	 * Constructor
@@ -22,8 +22,10 @@ public class Product implements java.io.Serializable {
 	public Product(long startId, String name){
 		this.name=name;
 		this.startId=startId;
+		this.finalID=startId;
 		Tools = new ConcurrentLinkedDeque<>();
 		Parts = new ConcurrentLinkedDeque<>();
+
 	}
 
 	/**
