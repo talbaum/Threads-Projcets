@@ -106,7 +106,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param tasks
      * @param callback the callback to execute once all the results are resolved
      */
-    protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
+    protected  final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
         boolean foundOne = false;
         Object[] taskArr = tasks.toArray();
         for (int i = 0; i < taskArr.length; i++) {
