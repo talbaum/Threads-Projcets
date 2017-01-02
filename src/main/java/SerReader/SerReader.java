@@ -21,7 +21,7 @@ public class SerReader {
 
         SerReader obj = new SerReader();
 
-        ConcurrentLinkedQueue<Product> res = obj.deserialzeObject("result.ser");
+        ConcurrentLinkedQueue<Product> res = obj.deserialzeObject("C:\\Users\\amitu\\Downloads\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\result.ser");
 
         if (res == null) {
             System.out.println("error -> null object");

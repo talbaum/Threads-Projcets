@@ -103,9 +103,8 @@ public class VersionMonitorTest {
         Thread t1= new Thread(check);
         Thread t2=new Thread(check2);
 
-        t1.run();
-        t2.run();
+        t1.start();
+        t2.start();
         assertTrue("testingVal should be 40", testingVal==40);
-
     }
 }
