@@ -21,8 +21,6 @@ import java.util.Random;
 		for(Product part : p.getParts()){
 			value+=Math.abs(func(part.getFinalId()));
 		}
-	/*	long cur =p.getFinalId();
-		p.setFinalId(cur+value);*/
 		return value;
 	}
 

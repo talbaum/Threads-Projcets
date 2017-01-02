@@ -8,11 +8,9 @@ package bgu.spl.a2.sim;
 import bgu.spl.a2.VersionMonitor;
 import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
-
 import java.io.*;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import bgu.spl.a2.sim.tasks.ManufactoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
@@ -31,7 +29,6 @@ public class Simulator {
 	static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
 	static int productIndex=0;
 	static String FileName;
-	//static JSONParser parser;
 	/**
 	 * Begin the simulation
 	 * Should not be called before attachWorkStealingThreadPool()
@@ -45,13 +42,11 @@ public class Simulator {
 		try {
 
 			Object obj = parser.parse(new FileReader(FileName));
-			//Object obj = parser.parse(new FileReader("C:\\Users\\באום\\Desktop\\SPL\\Intelij Projects\\SPL2\\spl-a2-2017\\src\\main\\java\\bgu\\spl\\a2\\sim\\simulation[2].json"));
 			JSONObject jsonObject = (JSONObject) obj;
 
 			//number of threads
 			Long Threads = (long)jsonObject.get("threads");
 			Integer t = Integer.valueOf(Threads.intValue());
-			//System.out.println("Threads: "+t);
 			pool = new WorkStealingThreadPool(t);
 
 			//start checking for tools and their number
@@ -63,15 +58,12 @@ public class Simulator {
 				Long num = (long)tmp.get("qty");
 				Integer numOf = Integer.valueOf(num.intValue());
 				if (name.equals("gs-driver")){
-					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new GcdScrewDriver(),numOf);
 				}
 				else if (name.equals("np-hammer")){
-					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new NextPrimeHammer(),numOf);
 				}
 				else if (name.equals("rs-pliers")){
-					//System.out.println("tool: "+name + " num: "+numOf);
 					myWare.addTool(new RandomSumPliers(),numOf);
 				}
 			}
@@ -132,13 +124,13 @@ public class Simulator {
 						firstStart=false;
 					}
 
-					int cur = myVer.getVersion();
+/*					int cur = myVer.getVersion();
 					try {
 						myVer.await(cur);
 					}
 					catch (Exception e){
 						System.out.println(e.getMessage());
-					}
+					}*/
 
 					while (true){
 						if (finishedProducts.size()==productIndex)
@@ -162,12 +154,6 @@ public class Simulator {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-
-
-/*		while (true){
-			if (finishedProducts.size()==productIndex)
-				break;
-		}*/
 
 
 		Product[] tmpFinal = new Product[productIndex];
