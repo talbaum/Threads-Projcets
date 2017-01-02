@@ -10,7 +10,6 @@ import bgu.spl.a2.WorkStealingThreadPool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -98,12 +97,10 @@ public class Simulator {
 
 				//create new plan here
 				ManufactoringPlan tmpPlan = new ManufactoringPlan(name,tmpParts,tmpTools);
-				//System.out.println("name:"+name+ " parts:"+ Arrays.toString(tmpParts)+ " tools:"+Arrays.toString(tmpTools));
 				myWare.addPlan(tmpPlan);
 			}
 
 			JSONArray Waves = (JSONArray)jsonObject.get("waves");
-			//int productIndex=0;
 			for (int d=0;d<Waves.size();d++){
 				JSONArray Products = (JSONArray)Waves.get(d);
 
@@ -123,10 +120,7 @@ public class Simulator {
 						ID++;
 
 						Runnable callback  = () -> {
-							//System.out.println(newTask.getResult().get());
-							//System.out.println(finishedProducts.size());
 							finishedProducts.add(newTask.getResult().get());
-
 							oneLessProduct();
 						};
 						newTask.getResult().whenResolved(callback);
@@ -151,7 +145,6 @@ public class Simulator {
 							break;
 					}
 				}
-
 			}
 
 
@@ -170,12 +163,12 @@ public class Simulator {
 			e.printStackTrace();
 		}
 
-/*
-		while (true){
+
+/*		while (true){
 			if (finishedProducts.size()==productIndex)
 				break;
-		}
-*/
+		}*/
+
 
 		Product[] tmpFinal = new Product[productIndex];
 		for (int i=0;i<productIndex;i++){
