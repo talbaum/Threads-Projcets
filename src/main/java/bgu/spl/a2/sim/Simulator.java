@@ -102,7 +102,6 @@ public class Simulator {
 					Long qty = (long)tmpP.get("qty");
 					Integer count = Integer.valueOf(qty.intValue());
 					String pPlanName = (String)tmpP.get("product");
-					System.out.println("product name: "+pPlanName+" qty:"+qty);
 
 					Long ID = (long)tmpP.get("startId");
 					while (count>0){
@@ -123,15 +122,6 @@ public class Simulator {
 						pool.start();
 						firstStart=false;
 					}
-
-/*					int cur = myVer.getVersion();
-					try {
-						myVer.await(cur);
-					}
-					catch (Exception e){
-						System.out.println(e.getMessage());
-					}*/
-
 					while (true){
 						if (finishedProducts.size()==productIndex)
 							break;
@@ -166,10 +156,7 @@ public class Simulator {
 		for (int i=0;i<productIndex;i++){
 			FinalJob.add(tmpFinal[i]);
 		}
-		System.out.println(productIndex + " is the size of finished products");
-
 		return FinalJob;
-
 	}
 
 	static  synchronized void oneLessProduct (){
@@ -203,7 +190,6 @@ public class Simulator {
 
 			FileInputStream fin = new FileInputStream("result.ser");
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			System.out.println(ois.readObject());
 			ois.close();
 		}
 		catch (FileNotFoundException e) {
@@ -211,13 +197,6 @@ public class Simulator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		catch (ClassNotFoundException e){
-			e.printStackTrace();
-		}
-		System.out.println("answer size:"+SimulationResult.size());
 
-		for (Product p: SimulationResult){
-			ProductPrinter.printProduct(p);
-		}
 	}
 }
