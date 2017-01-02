@@ -73,14 +73,10 @@ public class MergeSort extends Task<int[]> {
     }
 
     public static void main(String[] args) throws InterruptedException {
-            for(int p=0;p<10001;p++){
-            long tStart = System.currentTimeMillis();
+
             WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
-            int n = 100000; //you may check on different number of elements if you like
+            int n = 1000000; //you may check on different number of elements if you like
             int[] array = new Random().ints(n).toArray();
-            //int[] array = new int[n];
-            //for (int i=0;i<n;i++)
-            //    array[i]=i;
 
             MergeSort task = new MergeSort(array);
 
@@ -89,21 +85,12 @@ public class MergeSort extends Task<int[]> {
             pool.submit(task);
             task.getResult().whenResolved(() -> {
                 //warning - a large print!! - you can remove this line if you wish
-               // System.out.println(Arrays.toString(task.getResult().get()));
+                System.out.println(Arrays.toString(task.getResult().get()));
                 l.countDown();
             });
 
             l.await();
             pool.shutdown();
-            long tEnd = System.currentTimeMillis();
-            long tDelta = tEnd - tStart;
-            double elapsedSeconds = tDelta / 1000.0;
-
-            System.out.println(elapsedSeconds + " seconds");
-
-            System.out.println("great success " +p);
-        }
-        System.out.println("finished");
 
     }
 

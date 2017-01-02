@@ -53,6 +53,7 @@ public class Deferred<T> {
      * @param value - the value to resolve this deferred object with
      * @throws IllegalStateException in the case where this object is already
      *                               resolved
+     * need synchronized to make sure resolve is running on a single value.
      */
     public synchronized void resolve(T value) {
         //TODO: replace method body with real implementation
@@ -89,6 +90,7 @@ public class Deferred<T> {
      *
      * @param callback the callback to be called when the deferred object is
      *                 resolved
+     * needed synchronized so the callback that will run will be the right callback for the deffered.
      */
     public synchronized void whenResolved(Runnable callback) {
         if (callback == null) {

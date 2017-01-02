@@ -40,6 +40,9 @@ public class Processor implements Runnable {
         this.pool = pool;
     }
 
+    /**
+     * run the processor and start running the tasks on his que.
+     */
     @Override
     public void run() {
         while (!pool.toShutDown) {
@@ -57,6 +60,9 @@ public class Processor implements Runnable {
         }
     }
 
+    /**
+     * in case the processor que is empty, try and steal tasks from other processors ques.
+     */
     void steal() {
         int whereToSteal = (id + 1) % (pool.myProcessors.length);
         //int startVersion = pool.monitor.getVersion();
@@ -75,7 +81,6 @@ public class Processor implements Runnable {
             }
         }
             //if there there is tasks to steal get here.
-
             if ((!awake && (whereToSteal != id))) {
             int numOfTasksToSteal = (pool.myQues[whereToSteal].size() / 2) - 1;
                 int stealCount = 0;
@@ -93,6 +98,11 @@ public class Processor implements Runnable {
                 }
             }
     }
+
+    /**
+     * add a given task to the processor que.
+     * @param task
+     */
     void addTask(Task<?> task){
         if (task!=null) {
             pool.myQues[id].add(task);
@@ -100,14 +110,24 @@ public class Processor implements Runnable {
         }
     }
 
+    /**
+     * @return the first task on the processor que.
+     * @throws Exception
+     */
     Task<?> removeTask() throws Exception{
         return pool.myQues[id].pollFirst();
     }
 
+    /**
+     * @return the WorkStealingThreadPool of our current job
+     */
     WorkStealingThreadPool getPool(){
         return pool;
     }
 
+    /**
+     * @return true if the que of the processor is empty.
+     */
     boolean isEmpty(){
         return pool.myQues[id].size()==0;
     }

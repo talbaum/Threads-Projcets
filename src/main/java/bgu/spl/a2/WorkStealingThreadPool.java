@@ -67,19 +67,10 @@ public class WorkStealingThreadPool {
      * shutdown the queue is itself a processor of this queue
      */
     public void shutdown() throws InterruptedException {
-        //TODO: replace method body with real implementation
         toShutDown = true;
         for (int i = 0; i < myThreads.length; i++) {
                 myThreads[i].interrupt();
         }
-        //monitor.inc();
-
-  /*   for (int i = 0; i < myThreads.length; i++) {
-    //      if (myThreads[i].isInterrupted()) {
-             // System.out.println("before join for thread " + i);
-            //  myThreads[i].join();
-              //System.out.println("after join for thread " + i);
-          }*/
       }
 
 

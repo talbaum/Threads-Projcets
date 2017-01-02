@@ -67,7 +67,7 @@ public class Product implements java.io.Serializable {
 	 */
 	public List<Product> getParts(){
 		List<Product> partsList = new LinkedList<>();
-		if (Parts!=null)  //fixed a problem but shouldnt be getting null anyway!
+		if (Parts!=null)
 		for (Product part : Parts){
 			partsList.add(part);
 		}

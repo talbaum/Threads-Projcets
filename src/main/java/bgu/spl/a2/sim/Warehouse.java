@@ -94,7 +94,7 @@ public class Warehouse {
 
 	/**
 	 * Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
-	 *
+	 * need synchronized in order to make sure 1 tool is released at each time.
 	 * @param tool - The tool to be returned
 	 */
 	public synchronized void releaseTool(Tool tool){

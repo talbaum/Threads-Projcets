@@ -19,7 +19,6 @@ import java.util.concurrent.locks.Lock;
  * methods
  */
 public class VersionMonitor {
-    //private int version=0;
     static AtomicInteger foo;
 
 
@@ -27,24 +26,30 @@ public class VersionMonitor {
         foo = new AtomicInteger(1);
     }
 
+    /**
+     need synchronized to avoid return diffrenet value then the requested one.
+     */
     public int getVersion() {
         synchronized(foo) {
             return foo.get();
         }
     }
-
+    /**
+     need synchronized in order to keep the right activity of this func.
+     */
     public void inc() {
         synchronized(foo) {
             foo.incrementAndGet();
             foo.notifyAll();
         }
     }
-
+    /**
+     need synchronized in order to keep foo waiting untill he is changed.
+     */
     public void await(int myversion) throws InterruptedException {
         synchronized (foo) {
 
         while (this.foo.get() == myversion) {
-           // System.out.println("im waiting now and its working good");
                 foo.wait();
             }
         }

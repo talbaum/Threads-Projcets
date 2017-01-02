@@ -18,7 +18,6 @@ import bgu.spl.a2.sim.tools.RandomSumPliers;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
-
 /**
  * A class describing the simulator for part 2 of the assignment
  */
@@ -29,6 +28,11 @@ public class Simulator {
 	static ConcurrentLinkedQueue<Product> finishedProducts = new ConcurrentLinkedQueue<>();
 	static int productIndex=0;
 	static String FileName;
+
+	public Simulator(WorkStealingThreadPool p) {
+		attachWorkStealingThreadPool(p);
+	}
+
 	/**
 	 * Begin the simulation
 	 * Should not be called before attachWorkStealingThreadPool()
@@ -112,7 +116,7 @@ public class Simulator {
 
 						Runnable callback  = () -> {
 							finishedProducts.add(newTask.getResult().get());
-							oneLessProduct();
+							oneMoreProduct();
 						};
 						newTask.getResult().whenResolved(callback);
 						pool.submit(newTask);
@@ -158,8 +162,10 @@ public class Simulator {
 		}
 		return FinalJob;
 	}
-
-	static  synchronized void oneLessProduct (){
+	/**
+	 * needed synchronized because the counter isn't atomic, without sync it may hurt the function of this func.
+	 */
+	static synchronized void oneMoreProduct (){
 		ProductsLeftThisWave++;
 		if (ProductsLeftThisWave==productIndex-1){
 			myVer.inc();

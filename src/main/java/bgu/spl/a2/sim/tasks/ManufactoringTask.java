@@ -9,8 +9,9 @@ import bgu.spl.a2.sim.tools.Tool;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 /**
- * Created by baum on 29/12/2016.
+ * this class is an extention to Task which holds a product and his plan to be made.
  */
 public class ManufactoringTask extends Task <Product> {
     Warehouse warehouse;
@@ -23,10 +24,18 @@ public class ManufactoringTask extends Task <Product> {
     AtomicInteger numOfTools;
 
 
+    /**
+     * @return the product held
+     */
     public Product getMyProd() {
         return myProd;
     }
 
+    /**
+     * @param warehouse
+     * @param plan
+     * @param startId
+     */
     public ManufactoringTask(Warehouse warehouse, ManufactoringPlan plan, long startId) {
         this.warehouse = warehouse;
         this.plan = plan;
@@ -37,6 +46,9 @@ public class ManufactoringTask extends Task <Product> {
         numOfTools=new AtomicInteger(plan.getTools().length);
     }
 
+    /**
+     *  start reading the json file and create the products plans and tasks.
+     */
     public void start() {
 
         if (plan.getParts().length > 0) {
@@ -73,6 +85,9 @@ public class ManufactoringTask extends Task <Product> {
         }
     }
 
+    /**
+     * checks whether any more tools are needed, and if so create the callback to use on the tool.
+     */
     private void toolsCheck() {
         for (String toolName : plan.getTools()) {
             Deferred<Tool> requestedTool;
@@ -87,32 +102,17 @@ public class ManufactoringTask extends Task <Product> {
                 warehouse.releaseTool(requestedTool.get());
 
                 //if this was the last tool needed , complete and finish
-               // AtomicInteger numOfTools = new AtomicInteger(toolList.size());// (plan.getTools().length); ?
                 if (this.numOfTools.decrementAndGet() == 0)
                     complete(myProd);
             }); //end of lambda
         } //end of for
     }//end of toolCheck
 
+    /**
+     * @return index - the position of the product in the
+     */
     int getIndex(){
         return index;
-    }
-
-    public String printProduct() {
-        String des = "ProductName: ";
-        des += myProd.getName();
-        des += " Product Id = " + myProd.getFinalId();
-        des += "\n" + "PartsList {" + "\n";
-        if (miniTasks != null) {
-            for (ManufactoringTask p : this.miniTasks) {
-                if (p != null) {
-                    des += p.printProduct();
-                }
-                des += "}" + "\n";
-
-            }
-        }
-        return des;
     }
 
 }

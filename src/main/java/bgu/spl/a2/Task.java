@@ -123,24 +123,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
             callback.run();
         }
     }
-     /*   Iterator<? extends Task<?>> IT = tasks.iterator();
-        while ((!foundOne)&(IT.hasNext())){
-            Task<?> tmp = IT.next();
-            if (tmp.getResult().isResolved()){
-                IT.remove();
-            }
-            else if (!foundOne){
-                Runnable callback2 = () -> whenResolved(tasks, callback);
-                tmp.myTaskDeferred.whenResolved(callback2);
-                foundOne=true;
-            }
-        }
-        if (!foundOne){
-            callback.run();
-        }
-    }*/
-
-
 
 
     /**
@@ -151,25 +133,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     protected  synchronized final void complete(R result) {
         myTaskDeferred.resolve(result);
-       /*Runnable callCompleteAgain = () -> this.complete(result);
-
-        Iterator<Task<?>> I = childTasks.iterator();
-
-        while (I.hasNext()){
-            if (I.next().getResult().isResolved())
-                I.remove();
-        }
-        if (childTasks.isEmpty()){
-            if (!myTaskDeferred.isResolved()) {
-                myTaskDeferred.resolve(result);
-            }
-
-        }
-        else{
-            if ((!myTaskDeferred.isResolved())&((!childTasks.isEmpty())))
-            childTasks.peek().myTaskDeferred.whenResolved(callCompleteAgain);
-        }
-    */
     }
 
     /**
